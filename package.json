@@ -1,0 +1,41 @@
+{
+  "name": "ramiel-bot",
+  "version": "0.1.0",
+  "description": "Discord music bot made with discord-akairo and discord.js-lavalink",
+  "main": "build/index.js",
+  "repository": "https://github.com/gazmull/ramiel-bot",
+  "author": "Euni <vescalaw@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "yarn run lint && yarn run compile",
+    "compile": "tsc -p .",
+    "lint": "tslint -c .tslint.js -p .",
+    "lint-fix": "yarn run lint --fix",
+    "pm2": "pm2 start .pm2.yml --env production",
+    "dev:watch": "tsc -p . --watch",
+    "dev:start": "nodemon . --config .nodemon.json"
+  },
+  "dependencies": {
+    "bufferutil": "^4.0.1",
+    "chalk": "^2.4.2",
+    "discord-akairo": "^8.0.0-beta.1",
+    "discord.js": "github:discordjs/discord.js",
+    "discord.js-lavalink": "github:mrjacz/discord.js-lavalink",
+    "erlpack": "github:discordapp/erlpack",
+    "node-fetch": "^2.3.0",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "5.0.0-beta.15",
+    "sequelize-typescript": "^0.6.8-beta.0",
+    "sqlite3": "^4.0.6",
+    "winston": "^3.2.1",
+    "zlib-sync": "^0.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^11.9.5",
+    "@types/node-fetch": "^2.1.6",
+    "tslint": "^5.13.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^3.3.3333"
+  }
+}

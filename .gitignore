@@ -1,0 +1,14 @@
+# Private
+application.yml
+provider
+logs
+
+# Lavalink
+server
+auth.js
+
+# NPM
+node_modules
+
+# Compiled
+build
