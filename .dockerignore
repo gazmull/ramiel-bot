@@ -25,7 +25,6 @@ logs/
 # Me
 README.md
 LICENSE
-application.example.yml
 server/
 build/
 .nodemon.json

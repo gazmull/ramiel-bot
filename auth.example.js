@@ -7,7 +7,7 @@ module.exports = {
   prefix: 'r!',
   // Lavalink Nodes; default is from your application.yml
   nodes: [
-      { host: '0.0.0.0', port: 2333, password: 'youshallnotpass' },
+      { host: 'ramiel-server', port: 2333, password: 'youshallnotpass' },
   ],
   // Your links; default is from the original bot
   supportLink: 'https://discord.gg/QTQCcah',

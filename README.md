@@ -1,4 +1,4 @@
-![what are you looking at](ramieru.png)
+![what are you looking at](https://github.com/gazmull/ramiel-bot/blob/master/ramieru.png?raw=true)
 # Ramiel
 - Built with [**Discord.JS-Akairo Framework** (**Master**)](https://github.com/1computer1/discord-akairo) and [**Discord.JS-Lavalink Client**](https://github.com/MrJacz/discord.js-lavalink)
     - [**Discord.JS-Akairo Documentation**](https://1computer1.github.io/discord-akairo/master)
@@ -13,34 +13,41 @@
 # Commands
 
 # Self-Hosting
-> The following items are required: [**Discord Bot Account**](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token), [**Yarn**](https://yarnpkg.com/en/docs/getting-started), [**JDK 11**](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [**Build Tools** (**Windows**)](https://github.com/felixrieseberg/windows-build-tools) | [**Build Tools** (**Linux**)](https://superuser.com/questions/352000/whats-a-good-way-to-install-build-essentials-all-common-useful-commands-on)
+> The following items are required: [**Discord Bot Account**](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token) and [**Docker-CE**](https://hub.docker.com/search/?type=edition&offering=community)
+
+> This section assumes that the user has basic knowledge of workflow in his/her machine (e.g: how to run a command shell). If not then use your bestfriend Google first.
 
 > **$** denotes it should be executed at a command shell.
 
 1. `$ git clone https://github.com/gazmull/ramiel-bot.git && cd ramiel-bot`
-2. Create an `auth.js` file and obtain the template from `auth.example.js`. The are documented by `// comments` to help set up the file.
-3. Create a database at `provider` folder (create one) named `ramiel.db`.
-    - For bash: `$ touch provider/ramiel.db`
+2. Create an `auth.js` file and obtain the template from [**auth.example.js**](https://github.com/gazmull/ramiel-bot/blob/master/auth.example.js).
+3. Create an `application.yml` file and obtain the template from [**application.example.yml**](https://github.com/gazmull/ramiel-bot/blob/master/application.example.yml).
+4. Optional: edit `docker-compose.yml` according to preferences, although it is already properly configured.
+   - **!** - To disable automatic updates from [**gazmull/ramiel-bot**](http://dockerhub.com/r/gazmull/ramiel-bot), make sure to put the watchtower service in comments.
+6. `$ docker-compose up -d`
 
-## Installing Manually
-1. Download [**Lavalink.jar**](https://ci.fredboat.com/viewLog.html?buildId=lastSuccessful&buildTypeId=Lavalink_Build&tab=artifacts&guest=1)
-    - Place it to `server` folder (create one).
-    - Create an `application.yml` file and obtain the template from `application.example.yml`.
-2. `$ yarn && yarn run compile`
-3. Run the server
-    - `$ java -jar -Xmx512m server/Lavalink.jar`
-        - `-Xmx[size]` denotes allocated memory for the application. 512M is optimal (at least for me).
-4. Run the client (bot)
-    - `$ node .`
-    - Or from `.pm2.yml`: `$ pm2 start .pm2.yml --only ramiel-client --env production`
+## Pre-built
+> This repository has a pre-built Docker image over here: [**gazmull/ramiel-bot**](http://dockerhub.com/r/gazmull/ramiel-bot)
 
-## Installing With Docker
-1. Install [**Docker**](https://docker.com).
-2. Optional: edit `docker-compose.yml` and `Dockerfile` according to your preferences. They're already set up properly so you need no worries if you skip this step.
-    - Unlikely to be, but if it happens that you're hosting Ramiel as a big girl, you should increase the allocated memory on `Dockerfile-Lavalink` under CMD:
-        - `CMD [ "java", "-jar", "-Xmx[Edit this one in particular. e.g: 2G for 2GB]", "server/Lavalink.jar" ]`
-3. `$ docker-compose up`
-    - Append `-d` if you want to leave the containers run in the background.
+1. Create a folder named `ramiel` and then do the following in it:
+2. Create an `auth.js` file and obtain the template from [**auth.example.js**](https://github.com/gazmull/ramiel-bot/blob/master/auth.example.js).
+3. Create an `application.yml` file and obtain the template from [**application.example.yml**](https://github.com/gazmull/ramiel-bot/blob/master/application.example.yml).
+4. Create a `docker-compose.yml` file and obtain the template from [**docker-compose.yml**](https://github.com/gazmull/ramiel-bot/blob/master/docker-compose.yml).
+   - Optional: edit `docker-compose.yml` according to preferences, although it is already properly configured.
+     - **!** - To disable automatic updates from [**gazmull/ramiel-bot**](http://dockerhub.com/r/gazmull/ramiel-bot), make sure to put the watchtower service in comments.
+6. `$ docker-compose up -d`
+
+## Next Step
+> This assumes that you're in the `ramiel` folder.
+
+Here are some commands to run while using Ramiel:
+
+- `$ docker-compose stop` to stop all services from `docker-compose.yml`
+- `$ docker-compose logs -f` to see the logs from all services in real time.
+- `$ docker ps -a` to show all containers (services).
+- The following are for cleaning up (usually for clean re-installing or when getting rid of Ramiel):
+    - `$ docker stop $(docker ps -a -q)`
+    - `$ docker rmi $(docker images -q --filter "dangling=true")`
 
 # License
-> [MIT](LICENSE)
+> [MIT](https://github.com/gazmull/ramiel-bot/blob/master/LICENSE)

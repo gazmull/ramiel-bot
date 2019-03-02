@@ -1,17 +1,32 @@
-version: '2.1'
+version: "3"
 
 services:
   ramiel-server:
-    build:
-        context: .
-        dockerfile: Dockerfile-Lavalink
-    restart: always
+    container_name: lavalink
+    image: fredboat/lavalink:master
+    restart: on-failure:3
     ports:
       - 2333:2333
+    volumes:
+      - ./application.yml:/opt/Lavalink/application.yml
+      - ./logs:/opt/Lavalink/logs
+    # Unlikely to be, but if it comes to hosting Ramiel as a big girl (serving a large amount of ~~villagers~~ guilds), increasing the allocated ~~contraceptives~~ memory is a must.
+    # Change -Xmx to your prefered size. E.g: -Xmx2G for 2GB memory allocated.
+    entrypoint: java -Xmx512m -jar Lavalink.jar
 
   ramiel-client:
+    container_name: ramiel
     image: gazmull/ramiel-bot
     build: .
-    restart: always
+    restart: on-failure:3
     environment:
       NODE_ENV: production
+    volumes: 
+      - ./auth.js:/opt/ramiel-client/auth.js
+
+  # Put the server below in comments if you don't want to receive updates from the base image
+  watchtower:
+    image: v2tec/watchtower
+    restart: on-failure:3
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

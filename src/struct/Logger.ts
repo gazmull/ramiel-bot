@@ -1,9 +1,13 @@
 import chalk from 'chalk';
+import { inspect } from 'util';
 import { createLogger, format, transports } from 'winston';
 
 export default class Winston {
   public logger = createLogger({
-    transports: [ new transports.Console() ],
+    transports: [
+      new transports.Console(),
+      new transports.File({ filename: 'Ramiel.log', dirname: process.cwd() + '/logs' }),
+    ],
     exitOnError: false,
     format: this.baseFormat()
   });
@@ -13,7 +17,10 @@ export default class Winston {
       `${this.setColour('timestamp', this.time)}: [${this.setColour(log.level)}] ${log.message}`;
     const formatError = log =>
       `${this.setColour('timestamp', this.time)}: [${this.setColour(log.level)}] ${log.message}\n ${log.stack}\n`;
-    const _format = log => log instanceof Error ? formatError(log) : formatMessage(log);
+    const _format = log =>
+      log instanceof Error
+        ? formatError(log)
+        : formatMessage(Object.create({ level: log.level, message: inspect(log.message, { showHidden: true }) }));
 
     return format.combine(format.printf(_format));
   }

@@ -1,6 +1,6 @@
 server: # REST and WS server
   port: 2333
-  address: 0.0.0.0
+  address: "ramiel-server" # Do not touch this unless you know what you're doing
 spring:
   main:
     banner-mode: log

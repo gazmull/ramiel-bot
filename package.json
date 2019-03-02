@@ -13,17 +13,14 @@
     "compile": "tsc -p .",
     "lint": "tslint -c .tslint.js -p .",
     "lint-fix": "yarn run lint --fix",
-    "pm2": "pm2 start .pm2.yml --env production",
     "dev:watch": "tsc -p . --watch",
     "dev:start": "nodemon . --config .nodemon.json"
   },
   "dependencies": {
-    "bufferutil": "^4.0.1",
     "chalk": "^2.4.2",
     "discord-akairo": "^8.0.0-beta.1",
     "discord.js": "github:discordjs/discord.js",
     "discord.js-lavalink": "github:mrjacz/discord.js-lavalink",
-    "erlpack": "github:discordapp/erlpack",
     "node-fetch": "^2.3.0",
     "reflect-metadata": "^0.1.13",
     "sequelize": "5.0.0-beta.15",
