@@ -1,0 +1,17 @@
+version: '2.1'
+
+services:
+  ramiel-server:
+    build:
+        context: .
+        dockerfile: Dockerfile-Lavalink
+    restart: always
+    ports:
+      - 2333:2333
+
+  ramiel-client:
+    image: gazmull/ramiel-bot
+    build: .
+    restart: always
+    environment:
+      NODE_ENV: production

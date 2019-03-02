@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Discord music bot made with discord-akairo and discord.js-lavalink",
   "main": "build/index.js",
+  "typings": "./typings",
   "repository": "https://github.com/gazmull/ramiel-bot",
   "author": "Euni <vescalaw@gmail.com>",
   "license": "MIT",

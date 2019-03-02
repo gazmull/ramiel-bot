@@ -1,0 +1,34 @@
+# NPM
+node_modules
+npm-debug.log
+
+# IDE
+.vscode
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Misc
+.travis.yml
+*/bin
+*/obj
+*.log
+logs/
+
+# Me
+README.md
+LICENSE
+auth.example.js
+application.example.yml
+server/
+build/
+.nodemon.json
+.tslint.js
+ramieru.png
