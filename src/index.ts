@@ -9,7 +9,7 @@ client
   .catch(err => client.logger.error(err));
 
 client
-  .on('disconnect', inf => { client.logger.warn(inf); process.exit(0); })
+  .on('disconnect', inf => { client.logger.warn(inf); process.exit(1); })
   .on('error', err => client.logger.error(err))
   .on('warn', inf => client.logger.warn(inf));
 

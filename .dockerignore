@@ -23,6 +23,8 @@ docker-compose*
 logs/
 
 # Me
+auth.js
+application.yml
 README.md
 LICENSE
 server/

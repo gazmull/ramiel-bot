@@ -30,7 +30,7 @@ export default class extends Listener {
     for (const [ , node ] of this.client.music.lavalink.nodes)
       node
         .once('ready', () => this.client.logger.info('Connected to Lavalink Server!'))
-        .once('disconnect', inf => { this.client.logger.warn(inf); process.exit(0); });
+        .once('disconnect', inf => { this.client.logger.warn(inf); process.exit(1); });
 
     return true;
   }
