@@ -15,6 +15,7 @@ RUN apk add --update \
 RUN if ls | grep "auth.js"; then mv auth.js auth.js.bak; fi
 RUN cp auth.example.js auth.js && yarn compile
 RUN if ls | grep "auth.js.bak"; then rm auth.js && mv auth.js.bak auth.js; fi
+RUN if ! ls | grep "provider"; then mkdir provider && touch provider/ramiel.db; fi
 
 # ---
 
@@ -26,8 +27,6 @@ COPY --from=build /ramiel-client/node_modules node_modules
 COPY --from=build /ramiel-client/provider provider
 COPY --from=build /ramiel-client/build build
 COPY --from=build /ramiel-client/auth.js /ramiel-client/package.json ./
-
-RUN if ! ls | grep "provider"; then mkdir provider && touch provider/ramiel.db; fi
 
 ENV NODE_ENV production
 
