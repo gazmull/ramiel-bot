@@ -9,8 +9,9 @@ WORKDIR /usr/src/ramiel-client
 COPY [ "package.json", "yarn.lock", "./" ]
 
 RUN apk add --update \
-&& apk add --no-cache --virtual git curl build-base python g++ make \
-&& yarn
+&& apk add --no-cache --virtual .dependencies git curl build-base python g++ make \
+&& yarn \
+&& apk del .dependencies
 
 COPY . .
 
