@@ -2,6 +2,7 @@ language: node_js
 node_js:
   - 11
   - 10
+before_install: cp auth.example.js auth.js
 install: yarn
 sudo: false
 cache:

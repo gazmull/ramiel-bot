@@ -9,13 +9,15 @@ WORKDIR /usr/src/ramiel-client
 COPY [ "package.json", "yarn.lock", "./" ]
 
 RUN apk add --update \
-&& apk add --no-cache --virtual .build-deps git curl build-base python g++ make \
-&& yarn \
-&& apk del .build-deps
+&& apk add --no-cache --virtual git curl build-base python g++ make \
+&& yarn
 
 COPY . .
 
+RUN if ls | grep "auth.js"; then mv auth.js auth.js.bak; fi
+RUN cp auth.example.js auth.js
 RUN yarn compile
+RUN if ls | grep "auth.js.bak"; then rm auth.js && mv auth.js.bak auth.js; fi
 
 ENV NODE_ENV production
 
