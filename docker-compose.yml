@@ -23,6 +23,7 @@ services:
       NODE_ENV: production
     volumes: 
       - ./auth.js:/ramiel-client/auth.js
+      - ./logs:/ramiel-client/logs
 
   # Put the server below in comments if you don't want to receive updates from the base image
   watchtower:

@@ -48,6 +48,8 @@ Here are some commands to run while using Ramiel:
 - The following are for cleaning up (usually for clean re-installing or when getting rid of Ramiel):
     - `$ docker stop $(docker ps -a -q)`
     - `$ docker rmi $(docker images -q --filter "dangling=true")`
+    - If the commands above does not completely erase unused containers, refer to this [**documentation**](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes).
+    - Last resort will be `$ docker system purge`
 
 # License
 > [MIT](https://github.com/gazmull/ramiel-bot/blob/master/LICENSE)

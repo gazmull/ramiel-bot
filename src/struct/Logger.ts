@@ -1,12 +1,18 @@
 import chalk from 'chalk';
 import { inspect } from 'util';
 import { createLogger, format, transports } from 'winston';
+import * as RotateFile from 'winston-daily-rotate-file';
 
 export default class Winston {
   public logger = createLogger({
     transports: [
       new transports.Console(),
-      new transports.File({ filename: 'Ramiel.log', dirname: process.cwd() + '/logs' }),
+      new RotateFile({
+        filename: 'ramiel_%DATE%.log',
+        dirname: process.cwd() + '/logs',
+        maxFiles: '15d',
+        maxSize: '256m'
+      }),
     ],
     exitOnError: false,
     format: this.baseFormat()
