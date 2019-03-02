@@ -28,7 +28,6 @@ COPY --from=build /ramiel-client/build build
 COPY --from=build /ramiel-client/auth.js /ramiel-client/package.json ./
 
 RUN if ! ls | grep "provider"; then mkdir provider && touch provider/ramiel.db; fi
-RUN cat auth.js
 
 ENV NODE_ENV production
 
