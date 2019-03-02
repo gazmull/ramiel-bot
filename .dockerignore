@@ -25,7 +25,6 @@ logs/
 # Me
 README.md
 LICENSE
-auth.example.js
 application.example.yml
 server/
 build/
