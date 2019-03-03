@@ -141,7 +141,7 @@ export default class RamielClient extends AkairoClient {
           if (selected !== -1)
             return [ json.tracks[selected] ];
 
-          json.tracks.slice(0, 15);
+          json.tracks = json.tracks.slice(0, 200);
 
           return json;
         }
