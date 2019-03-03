@@ -21,6 +21,7 @@ export default class extends Command {
       '',
       `[**Source Code**](${repository}) | [**Bot Documentation**](${docs})`,
     ];
+    const queueSize = this.client.music.queues.size;
 
     return message.util.send(
       this.client.dialog(null)
@@ -36,7 +37,7 @@ export default class extends Command {
           `**Ramiel**: v${ramielVersion} ${privateBot ? '(Private Bot)' : ''}`,
         ], true)
         .addField('Discord', [
-          `**Servers**: ${this.client.guilds.size} (${this.client.music.queues.size} uses music)`,
+          `**Servers**: ${this.client.guilds.size} (${queueSize} use${queueSize > 1 ? 's' : ''} music)`,
           `**Channels**: ${this.client.channels.size}`,
           `**Users**: ${this.client.users.size}`,
         ], true)
