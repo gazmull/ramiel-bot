@@ -1,14 +1,20 @@
-import { Sequelize } from 'sequelize-typescript';
-import Blacklist from './models/blacklist';
-import Playlist from './models/playlist';
+import { ISequelizeConfig, Sequelize } from 'sequelize-typescript';
+import { db } from './../../auth';
+import Blacklist from './models/Blacklist';
+import Moderator from './models/Moderator';
+import Playlist from './models/Playlist';
 
-// @ts-ignore
 export const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: __dirname + '/../../provider/ramiel.db',
+  dialect: 'mariadb',
+  host: db.host,
+  database: db.database,
+  username: db.username,
+  password: db.password,
   define: {
     freezeTableName: true,
-    timestamps: true
+    timestamps: true,
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_unicode_ci'
   },
   logging: false,
   modelPaths: [ __dirname + '/models' ],
@@ -18,14 +24,14 @@ export const sequelize = new Sequelize({
     max: 10,
     min: 0
   }
-});
+} as ISequelizeConfig);
 
 export const create = () => {
   return {
     sequelize,
-    // @ts-ignore
     Op: Sequelize.Op,
     Playlist,
-    Blacklist
+    Blacklist,
+    Moderator
   };
 };

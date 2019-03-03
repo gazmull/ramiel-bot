@@ -9,6 +9,13 @@ module.exports = {
   nodes: [
       { host: 'ramiel-server', port: 2333, password: 'youshallnotpass' },
   ],
+  // MariaDB credentials
+  db: {
+    host: 'localhost', // if it doesn't work: windows/mac: host.docker.internal
+    database: 'ramiel',
+    username: 'ramiel',
+    password: 'youshallnotpass'
+  },
   // Your links; default is from the original bot
   supportLink: 'https://discord.gg/QTQCcah',
   inviteLink: 'http://addbot.thegzm.space',

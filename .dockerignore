@@ -27,8 +27,9 @@ auth.js
 application.yml
 README.md
 LICENSE
-server/
-build/
+server
+build
+provider
 .nodemon.json
 .tslint.js
 ramieru.png
