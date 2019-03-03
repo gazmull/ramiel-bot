@@ -1,42 +1,46 @@
-import { Command, Control } from 'discord-akairo';
+import { AkairoClient, Command } from 'discord-akairo';
 import { GuildMember, Message, VoiceChannel } from 'discord.js';
 import { Song } from '../../../typings';
+import Playlist from '../../struct/models/Playlist';
 
 export default class PlayCommand extends Command {
   constructor () {
     super('play', {
       aliases: [ 'add', 'play', 'search' ],
       description: {
-        content: 'Plays or adds a music to the playlist.',
-        usage: '<keyword>',
-        examples: [ 'dont let me go', 'its okay to be gay', 'hentai remix --first', '--playlist' ]
+        content: [
+          'Plays or adds a music to the playlist.',
+          '\n',
+          'Adding **--from=<user>** will search for a playlist name from the specified user instead',
+          'Adding **--first** will put the song/playlist to the first queue',
+          '\n',
+          '**Warning**: Adding a playlist will erase the current queue.',
+        ],
+        usage: '<keyword> [--first/--from=<user>]',
+        examples: [ 'dont let me go', 'its okay to be gay', '--first hentai remix', 'myplaylist32 --from=ramiel' ]
       },
       lock: 'guild',
       channel: 'guild',
-      ratelimit: 2,
+      ratelimit: 3,
       args: [
         {
           id: 'playlist',
-          match: 'flag',
-          flag: [ '-p', '--playlist' ]
+          match: 'option',
+          flag: [ '-fr', '--from=' ]
         },
-        Control.if((_, { playlist }) => playlist, [],
-          [
-            {
-              id: 'keyword',
-              type: 'length',
-              match: 'content',
-              prompt: {
-                start: 'What music would you like to play?',
-                retry: 'Name is too short. Try again!'
-              }
-            },
-          ]
-        ),
         {
           id: 'unshift',
           match: 'flag',
           flag: [ '-u', '--unshift', '-f', '--first' ]
+        },
+        {
+          id: 'keyword',
+          type: 'length',
+          match: 'text',
+          prompt: {
+            start: 'What music would you like to play?',
+            retry: 'Name is too short. Try again!'
+          }
         },
       ]
     });
@@ -47,11 +51,11 @@ export default class PlayCommand extends Command {
     { playlist, keyword, unshift }: { playlist: string, keyword?: string, unshift: boolean }
   ) {
     if (this.client.getQueue(message.guild.id).tracks.length > 15)
-      return message.util.send(this.client.dialog('Forbidden!', 'Queue is current full. Try again later!'));
+      return message.util.send(this.client.dialog('Forbidden!', 'Queue is currently full. Try again later!'));
 
     await message.util.send(this.client.dialog('', `${this.client.config.emojis.loading} Searching...`));
 
-    if (keyword) {
+    if (keyword && !playlist) {
       const songs: Song[] = await this.client.getSongs(keyword);
 
       if ((songs as any).loadType) {
@@ -84,24 +88,23 @@ export default class PlayCommand extends Command {
 
       return this.play(message, song, unshift);
     } else if (playlist) {
-      const myList = await this.client.db.Playlist.findOne({ where: { user: message.author.id } });
-      const prefix = this.client.config.prefix;
+      const resolvedUser = this.client.util.resolveUser(playlist, this.client.users) || message.author;
+      const lists = await this.client.db.Playlist.findAll({
+        where: {
+          user: resolvedUser.id,
+          name: { [this.client.db.Op.like]: `%${keyword}%` }
+        }
+      });
 
-      if (!myList)
-        return message.util.edit(
-          this.client.dialog(
-            'No Playlist Saved!',
-            [
-              'I swear I can\'t find one...',
-              `How about adding some songs with **${prefix}play <song>**, and then do **${prefix}save**?`,
-            ]
-          )
-        );
+      if (!lists.length)
+        return message.util.edit(this.client.dialog(`No Playlist Saved as ${keyword} from ${resolvedUser.tag} Found!`));
+
+      const selected: Playlist = lists.length === 1 ? lists[0] : await this.client.selection.exec(message, this, lists);
 
       const currentList = this.client.getQueue(message.guild.id);
       const user = currentList.user ? await message.guild.members.fetch(currentList.user) : null;
 
-      if (!this.cannotOverwrite(message, user))
+      if (await this.cannotOverwrite(this.client, message, user))
         return message.util.edit(
           this.client.dialog(
             'Not Allowed To Override Current Playlist',
@@ -113,7 +116,11 @@ export default class PlayCommand extends Command {
           )
         );
 
-      this.client.music.queues.set(message.guild.id, { tracks: JSON.parse(myList.list), user: message.author.id });
+      this.client.music.queues.set(
+        message.guild.id,
+        { tracks: selected.list, user: message.author.id, current: currentList.current }
+      );
+      await message.util.lastResponse.delete();
 
       return this.play(message);
     }
@@ -139,20 +146,24 @@ export default class PlayCommand extends Command {
           'Well... how am I suppose to release these feelings with a channel that restricts me from singing?'
         )
       );
-    else if (!channel.members.filter(m => !m.user.bot).size) {
+    else if (channel.members.filter(m => m.id !== m.guild.me.id && m.user.bot).size) {
       await this.client.music.lavalink.leave(message.guild.id);
       this.client.music.queues.delete(message.guild.id);
 
       return message.channel.send(
-        this.client.dialog('No users in the channel... left for good!')
+        this.client.dialog('H-hey... I\'m nervous a-around other b-bots... no... n-no thank y-you...!')
       );
     }
+    else if (!channel.members.filter(m => !m.user.bot).size) {
+      await this.client.music.lavalink.leave(message.guild.id);
+      this.client.music.queues.delete(message.guild.id);
 
-    if (player.paused) player.resume();
+      return message.channel.send(this.client.dialog('No users in the channel... left for good!'));
+    }
 
     const currentList = this.client.getQueue(message.guild.id);
     const user = currentList.user ? await message.guild.members.fetch(currentList.user) : null;
-    const unshiftable = unshift && !this.cannotOverwrite(message, user);
+    const unshiftable = unshift && await this.cannotOverwrite(this.client, message, user);
 
     if (song) {
       if (unshiftable)
@@ -221,7 +232,12 @@ export default class PlayCommand extends Command {
     );
   }
 
-  protected cannotOverwrite (message: Message, user: GuildMember) {
-    return user && user.hasPermission('MANAGE_GUILD') && !message.member.hasPermission('MANAGE_GUILD');
+  public async cannotOverwrite (client: AkairoClient, message: Message, user: GuildMember) {
+    const role = await client.db.Moderator.findOne({ where: { guild: message.guild.id } });
+
+    return (
+      (user && user.hasPermission('MANAGE_GUILD') && !message.member.hasPermission('MANAGE_GUILD')) ||
+      (user && role && user.roles.has(role.id) && !message.member.roles.has(role.id))
+    );
   }
 }

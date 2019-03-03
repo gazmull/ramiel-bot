@@ -8,7 +8,7 @@ export default class MusicInhibitor extends Inhibitor {
 
   public exec (message: Message, command: Command) {
     return command.categoryID === 'music' &&
-      [ 'play', 'pause', 'stop' ].includes(command.id) &&
+      [ 'destroy', 'pause', 'play', 'resume', 'seek', 'stop', 'volume' ].includes(command.id) &&
       (!message.member.voice || !message.member.voice.channel);
   }
 }

@@ -1,6 +1,5 @@
 import { Command } from 'discord-akairo';
 import { Message, TextChannel } from 'discord.js';
-import { Song } from '../../typings';
 import RamielClient from './RamielClient';
 
 export default class Selection {
@@ -10,7 +9,7 @@ export default class Selection {
 
   protected client: RamielClient;
 
-  public async exec (message: Message, command: Command, rows: Song[]) {
+  public async exec (message: Message, command: Command, rows: any[]) {
     const client = this.client;
     const embed = client.util.embed()
       .setColor(0xFF00AE)
@@ -21,7 +20,9 @@ export default class Selection {
           'Select an item by their designated `number` to continue.',
           'Saying `cancel` or `0` will cancel the command.',
           '\n',
-          rows.map((v, i) => `**${i + 1}** - [${v.info.title}](${v.info.uri})`).join('\n'),
+          rows.map((v, i) =>
+            `**${i + 1}** - ${rows[0].info ? `[${v.info.title}](${v.info.uri})` : `[${v.name}]`}`
+          ).join('\n'),
         ]
       );
 

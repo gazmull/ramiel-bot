@@ -2,8 +2,9 @@ import { Collection, MessageEmbed, StringResolvable } from 'discord.js';
 import { PlayerManager } from 'discord.js-lavalink';
 import { Sequelize } from 'sequelize-typescript';
 import { Logger } from 'winston';
-import Blacklist from '../src/struct/models/blacklist';
-import Playlist from '../src/struct/models/playlist';
+import Blacklist from '../src/struct/models/Blacklist';
+import Moderator from '../src/struct/models/Moderator';
+import Playlist from '../src/struct/models/Playlist';
 import Selection from '../src/struct/Selection';
 
 declare module 'discord-akairo' {
@@ -20,9 +21,10 @@ declare module 'discord-akairo' {
     selection: Selection;
     db: {
       sequelize: Sequelize,
-      Op: any,
+      Op: Sequelize['Op'],
       Playlist: typeof Playlist,
-      Blacklist: typeof Blacklist
+      Blacklist: typeof Blacklist,
+      Moderator: typeof Moderator
     }
     dialog(title: string, description?: StringResolvable): MessageEmbed;
     getSongs(keyword: string): Promise<Song[]>;
@@ -35,6 +37,7 @@ export interface IConfig {
   owner: string;
   prefix: string;
   nodes: { host: string, port: number, password: string }[];
+  db: { host: string, database: string, username: string, password: string }
   supportLink: string;
   inviteLink: string;
   docs: string;
