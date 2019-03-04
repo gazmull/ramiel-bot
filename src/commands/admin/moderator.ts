@@ -16,10 +16,6 @@ export default class ModeratorCommand extends Command {
         {
           id: 'role',
           type: 'role',
-          prompt: {
-            start: 'What role would you like to assign as a Music Moderator?',
-            retry: 'Neh... I don\'t think that is a valid role. Try again!'
-          },
           default: null
         },
       ]
@@ -33,7 +29,7 @@ export default class ModeratorCommand extends Command {
       if (!found) return message.util.reply(this.client.dialog('No moderator role is set. Set one today!'));
 
       // @ts-ignore
-      const resolvedRole = await message.guild.roles.fetch(found.role) as Role;
+      const resolvedRole = found.role ? await message.guild.roles.fetch(found.role) as Role : null;
 
       if (!resolvedRole)
         return message.util.reply(
@@ -45,7 +41,7 @@ export default class ModeratorCommand extends Command {
 
     const updated = await this.client.db.Moderator.upsert({
       guild: message.guild.id,
-      moderator: role.id
+      role: role.id
     });
 
     return message.util.reply(

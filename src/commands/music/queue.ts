@@ -54,8 +54,9 @@ export default class QueueCommand extends Command {
       .showPageIndicator(true)
       .formatField(
         '# - Song',
-        (t: Song, i: number) =>
-          `**${i + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
+        (t: Song) =>
+          // tslint:disable-next-line:max-line-length
+          `**${isNothing.indexOf(t) + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
       );
 
     return embed.build();

@@ -64,8 +64,9 @@ export default class PlaylistsCommand extends Command {
       )
       .formatField(
         '# - Song',
-        (t: Song, i: number) =>
-          `**${i + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
+        (t: Song) =>
+          // tslint:disable-next-line:max-line-length
+          `**${playlist.list.indexOf(t) + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
       )
       .build();
   }
