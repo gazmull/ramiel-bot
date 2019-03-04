@@ -6,8 +6,9 @@ module.exports = {
   // Default prefix along "ramiel, "
   prefix: 'r!',
   // Lavalink Nodes; default is from your application.yml
+  // Change host back to ramiel-server if it doesnt work (i mean wtf but okay)
   nodes: [
-      { host: 'ramiel-server', port: 2333, password: 'youshallnotpass' },
+      { host: 'localhost', port: 2333, password: 'youshallnotpass' },
   ],
   // MariaDB credentials
   db: {
