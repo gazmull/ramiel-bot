@@ -1,9 +1,15 @@
 ![what are you looking at](https://github.com/gazmull/ramiel-bot/blob/master/ramieru.png?raw=true)
+
+![GitHub package.json version](https://img.shields.io/github/package-json/v/gazmull/ramiel-bot.svg?logo=github&style=for-the-badge)
+
+![Travis (.org)](https://img.shields.io/travis/gazmull/ramiel-bot.svg?logo=travis&style=for-the-badge) ![Docker Build Status](https://img.shields.io/docker/cloud/build/gazmull/ramiel-bot.svg?logo=docker&style=for-the-badge&label=Build)
+
+![MicroBadger Size](https://img.shields.io/microbadger/image-size/gazmull/ramiel-bot.svg?style=for-the-badge&logo=Docker&label=Size) ![MicroBadger Layers](https://img.shields.io/microbadger/layers/gazmull/ramiel-bot.svg?style=for-the-badge&logo=Docker&label=Layers) ![Docker Automated build](https://img.shields.io/docker/cloud/automated/gazmull/ramiel-bot.svg?style=for-the-badge&logo=Docker&label=Build) ![Docker Pulls](https://img.shields.io/docker/pulls/gazmull/ramiel-bot.svg?style=for-the-badge&logo=Docker&label=Pulls)
+
 # Ramiel
 - Built with [**Discord.JS-Akairo Framework** (**Master**)](https://github.com/1computer1/discord-akairo) and [**Discord.JS-Lavalink Client**](https://github.com/MrJacz/discord.js-lavalink)
     - [**Discord.JS-Akairo Documentation**](https://1computer1.github.io/discord-akairo/master)
     - [**Discord.JS-Lavalink Documentation**](https://mrjacz.github.io/discord.js-lavalink)
-- Version: **0.1.0**
 - [**Discord Server**](http://ramieldev.thegzm.space)
 - [**Bot Guide**](https://docs.thegzm.space/ramiel-bot) (N/A)
 
