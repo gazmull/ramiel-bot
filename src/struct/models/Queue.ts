@@ -11,7 +11,6 @@ export default class Queue extends Model<Queue> {
   @Column({ type: DataType.STRING({ length: 32 }) })
   public channel: string;
 
-  @Unique
   @Column({
     type: DataType.TEXT,
     defaultValue: null,
