@@ -27,6 +27,7 @@ export default class PlaylistsCommand extends Command {
         },
         {
           id: 'playlist',
+          type: 'lowercase',
           match: 'rest'
         },
       ]
@@ -42,7 +43,7 @@ export default class PlaylistsCommand extends Command {
     const lists = await this.client.db.Playlist.findAll({ where, attributes: [ 'name', 'list' ] });
 
     if (!lists.length)
-      return message.util.reply(this.client.dialog('Hmm... can\'t find one.'));
+      return message.util.reply(this.client.dialog(`Hmm... can\'t find one from ${user}.`));
 
     const embed = new FieldsEmbed()
       .setColor(0xFE9257)
@@ -51,6 +52,11 @@ export default class PlaylistsCommand extends Command {
       .setElementsPerPage(5);
 
     if (lists.length === 1) return this.doSongs(embed, user, lists.shift());
+    if (playlist) {
+      const foundExact = lists.find(s => s.name.toLowerCase() === playlist);
+
+      if (foundExact) return this.doSongs(embed, user, foundExact);
+    }
 
     return this.doLists(embed, user, lists);
   }
@@ -66,14 +72,14 @@ export default class PlaylistsCommand extends Command {
         '# - Song',
         (t: Song) =>
           // tslint:disable-next-line:max-line-length
-          `**${playlist.list.indexOf(t) + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
+          `**${playlist.list.findIndex(e => e.info.identifier === t.info.identifier) + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
       )
       .build();
   }
 
   protected doLists (embed: FieldsEmbed, user: User, playlists: Playlist[]) {
     return embed
-      .setTitle(`${user.tag}'s (${user.id}) Playlists`)
+      .setTitle(`${user.tag}'s Playlists`)
       .setDescription(`To see a playlist's songs, say \`${this.client.config.prefix}list ${user.id} [playlist name]\``)
       .showPageIndicator(true)
       .setArray(playlists)
