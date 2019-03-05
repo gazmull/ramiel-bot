@@ -28,8 +28,8 @@ export default class StopCommand extends Command {
 
   public async exec (message: Message, { skip }: { skip: number }) {
     const cannotOverwrite = (this.handler.modules.get('play') as PlayCommand).cannotOverwrite;
-    const hasPlaylist = this.client.getQueue(message.guild.id).user;
-    const resolvedUser = hasPlaylist ? await message.guild.members.fetch(hasPlaylist) : null;
+    const myQueue = await this.client.getQueue(message.guild.id);
+    const resolvedUser = myQueue.user ? await message.guild.members.fetch(myQueue.user) : null;
 
     if (await cannotOverwrite(this.client, message, resolvedUser)) return;
 
@@ -38,13 +38,11 @@ export default class StopCommand extends Command {
     if (!player)
       return message.util.reply(this.client.dialog('Huh?', 'I don\'t have any song to stop. Why bother?'));
     if (skip) {
-      const myQueue = this.client.getQueue(message.guild.id);
-
       if (skip > myQueue.tracks.length || skip <= 0)
         return message.util.reply(this.client.dialog('Err...', 'There is no song in that queue number...'));
 
       myQueue.tracks.splice(0, skip - 1);
-      this.client.music.queues.set(message.guild.id, myQueue);
+      this.client.setQueue(message.guild.id, myQueue);
     }
 
     await player.stop();

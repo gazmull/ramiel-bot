@@ -14,13 +14,12 @@ export default class DestroyCommand extends Command {
 
   public async exec (message: Message) {
     const cannotOverwrite = (this.handler.modules.get('play') as PlayCommand).cannotOverwrite;
-    const hasPlaylist = this.client.getQueue(message.guild.id).user;
+    const hasPlaylist = (await this.client.getQueue(message.guild.id)).user;
     const resolvedUser = hasPlaylist ? await message.guild.members.fetch(hasPlaylist) : null;
 
     if (await cannotOverwrite(this.client, message, resolvedUser)) return;
 
-    const result = await this.client.music.lavalink.leave(message.guild.id);
-    this.client.music.queues.delete(message.guild.id);
+    const result = await this.client.deleteQueue(message.guild.id, false);
 
     return message.channel.send(
       this.client.dialog(result ? 'Left successfully!' : 'Hmmm nope, not gonna happen.')

@@ -27,10 +27,29 @@ export default class extends Listener {
       shards: this.client.shard ? this.client.shard.count : 0
     });
 
-    for (const [ , node ] of this.client.music.lavalink.nodes)
+    for (const [ k, node ] of this.client.music.lavalink.nodes)
       node
-        .once('ready', () => this.client.logger.info('Connected to Lavalink Server!'))
-        .once('disconnect', inf => { this.client.logger.warn(inf); process.exit(1); });
+        .on('ready', async () => {
+          this.client.logger.info(`${k} Connected to Lavalink Server!`);
+
+          const guilds = this.client.music.queues;
+
+          if (!guilds.size) return;
+
+          for (const [ id, v ] of guilds) {
+            const lavalink = await this.client.music.lavalink.join({
+              guild: id,
+              channel: v.channel,
+              host: node.host
+            }, { selfdeaf: true });
+
+            lavalink.play(v.current.track);
+          }
+
+          this.client.logger.info(`${k} Reconnected to previously active players.`);
+        })
+        .on('reconnecting', () => this.client.logger.warn(`${k} Reconnecting to Lavalink Server...`))
+        .on('disconnect', inf => this.client.logger.warn(`${k} Disconnected: ${inf}`));
 
     return true;
   }

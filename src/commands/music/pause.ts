@@ -19,8 +19,8 @@ export default class PauseCommand extends Command {
 
   public async exec (message: Message) {
     const cannotOverwrite = (this.handler.modules.get('play') as PlayCommand).cannotOverwrite;
-    const hasPlaylist = this.client.getQueue(message.guild.id).user;
-    const resolvedUser = hasPlaylist ? await message.guild.members.fetch(hasPlaylist) : null;
+    const myQueue = await this.client.getQueue(message.guild.id);
+    const resolvedUser = myQueue.user ? await message.guild.members.fetch(myQueue.user) : null;
 
     if (await cannotOverwrite(this.client, message, resolvedUser)) return;
 

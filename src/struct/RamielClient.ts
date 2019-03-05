@@ -4,7 +4,7 @@ import { PlayerManager } from 'discord.js-lavalink';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
 import { prefix } from '../../auth';
-import { IConfig, UserList } from '../../typings';
+import { GuildQueue, IConfig, LavalinkResponse, Song } from '../../typings';
 import { create } from './Database';
 import Winston from './Logger';
 import RamielError from './RamielError';
@@ -32,7 +32,7 @@ export default class RamielClient extends AkairoClient {
 
     this.config = config;
 
-    this.commandHandler.resolver.addType('length', (phrase: string) => {
+    this.commandHandler.resolver.addType('music', (phrase: string) => {
       if (!phrase) return null;
       if (phrase.length <= 2) return null;
 
@@ -70,7 +70,7 @@ export default class RamielClient extends AkairoClient {
     directory: __dirname + '/../listeners'
   });
 
-  public music: { lavalink: PlayerManager, queues: Collection<string, UserList> } = {
+  public music: { lavalink: PlayerManager, queues: Collection<string, GuildQueue> } = {
     lavalink: null,
     queues: this.util.collection()
   };
@@ -117,7 +117,7 @@ export default class RamielClient extends AkairoClient {
       .setDescription(description);
   }
 
-  public async getSongs (keyword: string) {
+  public async getSongs (keyword: string): Promise<LavalinkResponse | Song[]> {
     const node = this.music.lavalink.nodes.first();
     const params = new URLSearchParams();
     const isHttp = /^https?:\/\//.test(keyword);
@@ -143,7 +143,7 @@ export default class RamielClient extends AkairoClient {
 
           json.tracks = json.tracks.slice(0, 200);
 
-          return json;
+          return json as LavalinkResponse;
         }
         case 'TRACK_LOADED': return [ json.tracks[0] ];
         default: return json.tracks.slice(0, 10);
@@ -156,12 +156,43 @@ export default class RamielClient extends AkairoClient {
     }
   }
 
-  public getQueue (guildID: string) {
+  public async getQueue (guildID: string) {
     const queue = () => this.music.queues.get(guildID);
 
-    if (!queue()) this.music.queues.set(guildID, { tracks: [], current: null, user: null });
+    if (!queue()) {
+      const remoteQueue = await this.db.Queue.findOne({ where: { guild: guildID } });
+      const values: GuildQueue = {
+        tracks: remoteQueue ? remoteQueue.tracks : [ ],
+        current: remoteQueue ? remoteQueue.current : null,
+        user: remoteQueue ? remoteQueue.user : null,
+        channel: remoteQueue ? remoteQueue.channel : null
+      };
+
+      this.setQueue(guildID, values);
+    }
 
     return queue();
+  }
+
+  public async setQueue (guildID: string, values: GuildQueue) {
+    await this.db.Queue.upsert({
+      guild: guildID,
+      channel: values.channel,
+      user: values.user,
+      current: values.current,
+      tracks: values.tracks
+    });
+    this.music.queues.set(guildID, values);
+
+    return this.getQueue(guildID);
+  }
+
+  public async deleteQueue (guildID: string, paranoid = true) {
+    if (!paranoid) await this.music.lavalink.leave(guildID);
+
+    await this.db.Queue.destroy({ where: { guild: guildID } });
+
+    return this.music.queues.delete(guildID);
   }
 
   get db () {

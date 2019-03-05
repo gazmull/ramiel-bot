@@ -21,8 +21,8 @@ export default class QueueCommand extends Command {
     });
   }
 
-  public exec (message: Message, { page }: { page: number }) {
-    const myQueue = this.client.getQueue(message.guild.id);
+  public async exec (message: Message, { page }: { page: number }) {
+    const myQueue = await this.client.getQueue(message.guild.id);
     const currentSong = this.client.music.lavalink.get(message.guild.id);
 
     if (!currentSong || !myQueue.current)

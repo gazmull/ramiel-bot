@@ -1,5 +1,6 @@
 import { Command } from 'discord-akairo';
 import { Message } from 'discord.js';
+import { LavalinkResponse } from '../../../typings';
 
 export default class SaveCommand extends Command {
   constructor () {
@@ -26,7 +27,7 @@ export default class SaveCommand extends Command {
         },
         {
           id: 'name',
-          type: 'length',
+          type: 'music',
           match: 'text',
           prompt: {
             start: 'What would you like to name the new playlist as?',
@@ -42,7 +43,8 @@ export default class SaveCommand extends Command {
       link = this.handler.resolver.type('url')(link, message, { });
       const resolved = await this.client.getSongs(link);
 
-      if (!(resolved as any).loadType) return message.util.reply(this.client.dialog('Not a valid playlist!'));
+      if (!(resolved as LavalinkResponse).loadType)
+        return message.util.reply(this.client.dialog('Not a valid playlist!'));
 
       const [ lUpdated ] = await this.client.db.Playlist.findOrCreate({
         where: {
@@ -51,7 +53,7 @@ export default class SaveCommand extends Command {
         }
       });
 
-      await lUpdated.update({ list: (resolved as any).tracks });
+      await lUpdated.update({ list: (resolved as LavalinkResponse).tracks });
 
       return message.util.reply(
         this.client.dialog(
@@ -66,7 +68,7 @@ export default class SaveCommand extends Command {
       );
     }
 
-    const queue = this.client.getQueue(message.guild.id);
+    const queue = await this.client.getQueue(message.guild.id);
 
     if (!queue.tracks.length) return message.util.reply(this.client.dialog('Well, nothing to save...'));
 

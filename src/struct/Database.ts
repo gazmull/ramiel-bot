@@ -3,6 +3,7 @@ import { db } from './../../auth';
 import Blacklist from './models/Blacklist';
 import Moderator from './models/Moderator';
 import Playlist from './models/Playlist';
+import Queue from './models/Queue';
 
 export const sequelize = new Sequelize({
   dialect: 'mariadb',
@@ -32,6 +33,7 @@ export const create = () => {
     Op: Sequelize.Op,
     Playlist,
     Blacklist,
-    Moderator
+    Moderator,
+    Queue
   };
 };
