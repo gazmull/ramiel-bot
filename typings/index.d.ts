@@ -6,6 +6,7 @@ import Blacklist from '../src/struct/models/Blacklist';
 import Moderator from '../src/struct/models/Moderator';
 import Playlist from '../src/struct/models/Playlist';
 import Selection from '../src/struct/Selection';
+import Queue from '../src/struct/models/Queue';
 
 declare module 'discord-akairo' {
   export interface AkairoClient {
@@ -16,7 +17,7 @@ declare module 'discord-akairo' {
     logger: Logger;
     music: {
       lavalink: PlayerManager;
-      queues: Collection<string, UserList>;
+      queues: Collection<string, GuildQueue>;
     };
     selection: Selection;
     db: {
@@ -24,11 +25,14 @@ declare module 'discord-akairo' {
       Op: Sequelize['Op'],
       Playlist: typeof Playlist,
       Blacklist: typeof Blacklist,
-      Moderator: typeof Moderator
+      Moderator: typeof Moderator,
+      Queue: typeof Queue,
     }
     dialog(title: string, description?: StringResolvable): MessageEmbed;
-    getSongs(keyword: string): Promise<Song[]>;
-    getQueue(guildID: string): UserList;
+    getSongs(keyword: string): Promise<LavalinkResponse | Song[]>;
+    getQueue(guildID: string): Promise<GuildQueue>;
+    setQueue(guildID: string, values: GuildQueue): Promise<GuildQueue>;
+    deleteQueue(guildID: string, paranoid?: boolean): Promise<boolean>;
   }
 }
 
@@ -60,8 +64,18 @@ export interface Song {
   }
 }
 
-export interface UserList {
+export interface LavalinkResponse {
+  loadType?: 'TRACK_LOADED' | 'PLAYLIST_LOADED' | 'SEARCH_RESULT' | 'NO_MATCHES' | 'LOAD_FAILED';
+  playlistInfo?: {
+    name: string;
+    selectedTrack: number;
+  };
+  tracks?: Song[]
+}
+
+export interface GuildQueue {
   user: string;
+  channel: string;
   current?: Song;
   tracks: Song[];
 }
