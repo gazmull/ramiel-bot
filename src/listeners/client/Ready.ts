@@ -32,18 +32,24 @@ export default class extends Listener {
         .on('ready', async () => {
           this.client.logger.info(`${k} Connected to Lavalink Server!`);
 
-          const guilds = this.client.music.queues;
+          const guilds = await this.client.db.Queue.findAll();
 
-          if (!guilds.size) return;
+          if (!guilds.length) return;
 
-          for (const [ id, v ] of guilds) {
+          for (const g of guilds) {
             const lavalink = await this.client.music.lavalink.join({
-              guild: id,
-              channel: v.channel,
+              guild: g.guild,
+              channel: g.channel,
               host: node.host
             }, { selfdeaf: true });
 
-            lavalink.play(v.current.track);
+            this.client.music.queues.set(g.guild, {
+              channel: g.channel,
+              user: g.user,
+              current: g.current,
+              tracks: g.tracks
+            });
+            lavalink.play(g.current.track);
           }
 
           this.client.logger.info(`${k} Reconnected to previously active players.`);
