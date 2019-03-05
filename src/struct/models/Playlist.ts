@@ -3,7 +3,7 @@ import { Song } from '../../../typings';
 
 const random = () => `My_Playlist_${Math.random().toString(36).substr(2, 16)}`;
 
-@Table
+@Table({ tableName: 'playlist' })
 export default class Playlist extends Model<Playlist> {
   @Column({ type: DataType.STRING({ length: 32 }) })
   public user: string;

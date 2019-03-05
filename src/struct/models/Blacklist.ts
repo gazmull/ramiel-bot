@@ -1,6 +1,6 @@
 import { Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
-@Table
+@Table({ tableName: 'blacklist' })
 export default class Blacklist extends Model<Blacklist> {
   @PrimaryKey
   @Column({ type: DataType.STRING({ length: 32 }) })
