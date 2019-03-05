@@ -180,6 +180,8 @@ export default class RamielClient extends AkairoClient {
     await this.db.Queue.upsert({
       guild: guildID,
       channel: values.channel,
+      textChannel: values.textChannel,
+      host: values.host,
       user: values.user,
       current: values.current,
       tracks: values.tracks
