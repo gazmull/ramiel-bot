@@ -74,8 +74,13 @@ export interface LavalinkResponse {
 }
 
 export interface GuildQueue {
+  host: string;
   user: string;
   channel: string;
+  textChannel: {
+    id: string;
+    message: string;
+  };
   current?: Song;
   tracks: Song[];
 }

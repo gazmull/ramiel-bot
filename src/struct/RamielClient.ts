@@ -165,10 +165,12 @@ export default class RamielClient extends AkairoClient {
         tracks: remoteQueue ? remoteQueue.tracks : [ ],
         current: remoteQueue ? remoteQueue.current : null,
         user: remoteQueue ? remoteQueue.user : null,
-        channel: remoteQueue ? remoteQueue.channel : null
+        channel: remoteQueue ? remoteQueue.channel : null,
+        textChannel: remoteQueue ? remoteQueue.textChannel : { id: null, message: null },
+        host: remoteQueue ? remoteQueue.host : null
       };
 
-      this.setQueue(guildID, values);
+      await this.setQueue(guildID, values);
     }
 
     return queue();

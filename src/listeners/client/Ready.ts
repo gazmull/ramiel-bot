@@ -1,5 +1,6 @@
 import { Listener } from 'discord-akairo';
 import { PlayerManager } from 'discord.js-lavalink';
+import PlayCommand from '../../commands/music/play';
 
 export default class extends Listener {
   constructor () {
@@ -36,20 +37,21 @@ export default class extends Listener {
 
           if (!guilds.length) return;
 
-          for (const g of guilds) {
-            const lavalink = await this.client.music.lavalink.join({
-              guild: g.guild,
-              channel: g.channel,
-              host: node.host
-            }, { selfdeaf: true });
+          const resurrect = (this.client.commandHandler.modules.get('play') as PlayCommand).resurrect;
 
-            this.client.music.queues.set(g.guild, {
+          this.client.logger.info(`${k} Reconnecting to previously active players...`);
+
+          for (const g of guilds) {
+            const queue = await this.client.setQueue(g.guild, {
               channel: g.channel,
+              textChannel: g.textChannel,
               user: g.user,
               current: g.current,
-              tracks: g.tracks
+              tracks: g.tracks,
+              host: node.host
             });
-            lavalink.play(g.current.track);
+
+            await resurrect(g.guild, queue);
           }
 
           this.client.logger.info(`${k} Reconnected to previously active players.`);

@@ -1,6 +1,7 @@
 import { AkairoClient, Command } from 'discord-akairo';
-import { GuildMember, Message, VoiceChannel } from 'discord.js';
-import { LavalinkResponse, Song } from '../../../typings';
+import { GuildMember, Message, TextChannel, VoiceChannel } from 'discord.js';
+import { Player } from 'discord.js-lavalink';
+import { GuildQueue, LavalinkResponse, Song } from '../../../typings';
 import Playlist from '../../struct/models/Playlist';
 
 export default class PlayCommand extends Command {
@@ -66,8 +67,13 @@ export default class PlayCommand extends Command {
           {
             tracks: currentList.tracks.concat((songs as LavalinkResponse).tracks),
             current: currentList.current,
-            user: null,
-            channel: null
+            user: currentList.user,
+            channel: currentList.channel,
+            host: currentList.host,
+            textChannel: {
+              id: message.channel.id,
+              message: message.id
+            }
           }
         );
 
@@ -116,21 +122,51 @@ export default class PlayCommand extends Command {
           )
         );
 
-      this.client.setQueue(
-        message.guild.id,
-        { tracks: selected.list, user: message.author.id, channel: currentList.channel, current: currentList.current }
-      );
+      this.client.setQueue(message.guild.id, {
+        channel: currentList.channel,
+        current: currentList.current,
+        tracks: selected.list,
+        user: message.author.id,
+        host: currentList.host,
+        textChannel: {
+          id: message.channel.id,
+          message: message.id
+        }
+      });
       await message.util.lastResponse.delete();
 
       return this.play(message);
     }
   }
 
+  public async resurrect (guildID: string, queue: GuildQueue) {
+    const resolvedTextChannel = queue.textChannel.id
+      ? await this.client.channels.fetch(queue.textChannel.id) as TextChannel
+      : null;
+    const resolvedVoiceChannel = queue.channel
+      ? await this.client.channels.fetch(queue.channel)
+      : null;
+    const resolvedTextMessage = queue.textChannel.message
+      ? await resolvedTextChannel.messages.fetch(queue.textChannel.message)
+      : null;
+
+    if (!resolvedTextChannel || !resolvedVoiceChannel || !resolvedTextMessage) return this.client.deleteQueue(guildID);
+
+    const player = await this.client.music.lavalink.join({
+      guild: guildID,
+      channel: resolvedVoiceChannel.id,
+      host: queue.host
+    }, { selfdeaf: true });
+
+    return this.process(resolvedTextMessage, player, queue);
+  }
+
   public async play (message: Message, song?: Song, unshift = false) {
+    const nodes = this.client.music.lavalink.nodes;
     const player = await this.client.music.lavalink.join({
       guild: message.guild.id,
       channel: message.member.voice.channelID,
-      host: this.client.music.lavalink.nodes.first().host
+      host: nodes.find(N => N.stats.players === Math.min.apply(null, nodes.map(n => n.stats.players))).host
     }, { selfdeaf: true });
     const channel = await this.client.channels.fetch(player.channel) as VoiceChannel;
 
@@ -181,50 +217,8 @@ export default class PlayCommand extends Command {
       );
     }
 
-    if (!player.playing) {
-      const current = currentList.tracks.shift();
-      const next = currentList.tracks[0];
-      currentList.current = current;
-
-      this.client.setQueue(message.guild.id, currentList);
-
-      player
-        .play(current.track)
-        .once('disconnect', async err => {
-          await this.client.music.lavalink.leave(message.guild.id);
-
-          throw err;
-        })
-        .once('error', async err => {
-          await this.client.music.lavalink.leave(message.guild.id);
-
-          throw err;
-        })
-        .once('end', async (data: any) => {
-          if (data.reason === 'REPLACED') return;
-
-          const _currentList = await this.client.getQueue(message.guild.id);
-
-          if (_currentList.tracks.length) {
-            player.removeAllListeners();
-
-            return this.play(message);
-          }
-
-          await message.channel.send(this.client.dialog('Songs queue has ended!'));
-          await this.client.deleteQueue(message.guild.id, false);
-        });
-
-      return message.channel.send(
-        this.client.dialog(
-          'Now Playing!',
-          [
-            `[**${current.info.title}**](${current.info.uri}) by **${current.info.author}**`,
-            next ? `\nNext: [**${next.info.title}**](${next.info.uri}) by **${next.info.author}**` : '',
-          ]
-        )
-      );
-    }
+    if (!player.playing)
+      return this.process(message, player, currentList);
 
     return message.reply(
       this.client.dialog(
@@ -232,6 +226,51 @@ export default class PlayCommand extends Command {
         song
           ? `[**${song.info.title}**](${song.info.uri}) by **${song.info.author}**`
           : `${currentList.tracks.length} entries has been added.`
+      )
+    );
+  }
+
+  protected async process (message: Message, player: Player, currentList: GuildQueue) {
+    const current = currentList.tracks.shift();
+    const next = currentList.tracks[0];
+    currentList.current = current;
+
+    this.client.setQueue(message.guild.id, currentList);
+
+    player
+      .play(current.track)
+      .once('disconnect', async err => {
+        await this.client.music.lavalink.leave(message.guild.id);
+
+        throw err;
+      })
+      .once('error', async err => {
+        await this.client.music.lavalink.leave(message.guild.id);
+
+        throw err;
+      })
+      .once('end', async (data: any) => {
+        if (data.reason === 'REPLACED') return;
+
+        const _currentList = await this.client.getQueue(message.guild.id);
+
+        if (_currentList.tracks.length) {
+          player.removeAllListeners();
+
+          return this.play(message);
+        }
+
+        await message.channel.send(this.client.dialog('Songs queue has ended!'));
+        await this.client.deleteQueue(message.guild.id, false);
+      });
+
+    return message.channel.send(
+      this.client.dialog(
+        'Now Playing!',
+        [
+          `[**${current.info.title}**](${current.info.uri}) by **${current.info.author}**`,
+          next ? `\nNext: [**${next.info.title}**](${next.info.uri}) by **${next.info.author}**` : '',
+        ]
       )
     );
   }
