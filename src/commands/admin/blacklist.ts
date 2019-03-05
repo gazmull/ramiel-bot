@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo';
-import { Message, User } from 'discord.js';
+import { GuildMember, Message } from 'discord.js';
 
 export default class BlacklistCommand extends Command {
   constructor () {
@@ -14,11 +14,11 @@ export default class BlacklistCommand extends Command {
       userPermissions: [ 'MANAGE_GUILD' ],
       args: [
         {
-          id: 'user',
-          type: 'user',
+          id: 'member',
+          type: 'member',
           prompt: {
             start: 'Who would you like to block/unblock?',
-            retry: 'Neh... I don\'t think that is a valid user. Try again!'
+            retry: 'Neh... I don\'t think that is a valid member. Try again!'
           }
         },
         {
@@ -30,18 +30,26 @@ export default class BlacklistCommand extends Command {
     });
   }
 
-  public async exec (message: Message, { user, reason }: { user: User, reason: string }) {
-    const found = await this.client.db.Blacklist.findOne({ where: { user: user.id } });
+  public async exec (message: Message, { member, reason }: { member: GuildMember, reason: string }) {
+    const mod = await this.client.db.Moderator.findOne({ where: { guild: message.guild.id } });
+    const isMod = !member.user.bot && (member.hasPermission('MANAGE_GUILD') || member.roles.has(mod.role));
+
+    if (isMod)
+      return message.util.reply(
+        this.client.dialog('I can\'t just block a bot, a moderator, or a server manager. y\'know!')
+      );
+
+    const found = await this.client.db.Blacklist.findOne({ where: { user: member.id } });
     let notified = 'The violator was not notified';
 
     if (!found) {
       const newBlock = new this.client.db.Blacklist();
-      newBlock.user = user.id;
+      newBlock.user = member.id;
       newBlock.admin = message.author.id;
       newBlock.reason = reason;
 
       await newBlock.save();
-      await user.send([
+      await member.send([
         `You have been blocked from using my commands due to: **${reason || 'No reason given.'}**`,
         `Is this a mistake? Contact ${message.author}!`,
       ])
@@ -52,7 +60,7 @@ export default class BlacklistCommand extends Command {
         this.client.dialog(
           `Succesfully Blacklisted!`,
           [
-            `${user} has been blocked from using my commands due to: **${reason || 'No reason given.'}**`,
+            `${member} has been blocked from using my commands due to: **${reason || 'No reason given.'}**`,
             `\n${notified} regarding this action.`,
           ]
         )
@@ -60,7 +68,7 @@ export default class BlacklistCommand extends Command {
     }
 
     await found.destroy();
-    await user.send([
+    await member.send([
       `You have been unblocked from using my commands. Hooray!`,
       `~~Is this a mistake? Contact ${message.author}!~~`,
       `If you have forgotten about the commands, please see **${this.client.config.prefix}help**`,
@@ -72,7 +80,7 @@ export default class BlacklistCommand extends Command {
       this.client.dialog(
         `Succesfully Whitelisted!`,
         [
-          `${user} has been unblocked from using my commands. Yay?`,
+          `${member} has been unblocked from using my commands. Yay?`,
           `\n${notified} regarding this action.`,
         ]
       )
