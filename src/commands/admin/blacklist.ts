@@ -32,9 +32,9 @@ export default class BlacklistCommand extends Command {
 
   public async exec (message: Message, { member, reason }: { member: GuildMember, reason: string }) {
     const mod = await this.client.db.Moderator.findOne({ where: { guild: message.guild.id } });
-    const isMod = !member.user.bot && (member.hasPermission('MANAGE_GUILD') || member.roles.has(mod.role));
+    const isMod = member.hasPermission('MANAGE_GUILD') || member.roles.has(mod.role);
 
-    if (isMod)
+    if (isMod || member.user.bot)
       return message.util.reply(
         this.client.dialog('I can\'t just block a bot, a moderator, or a server manager. y\'know!')
       );
