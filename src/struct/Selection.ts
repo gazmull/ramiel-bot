@@ -21,7 +21,7 @@ export default class Selection {
           'Saying `cancel` or `0` will cancel the command.',
           '\n',
           rows.map((v, i) =>
-            `**${i + 1}** - ${rows[0].info ? `[${v.info.title}](${v.info.uri})` : `[${v.name}]`}`
+            `**${i + 1}** - ${rows[0].info ? `[${v.info.title}](${v.info.uri})` : `*${v.name}*`}`
           ).join('\n'),
         ]
       );
