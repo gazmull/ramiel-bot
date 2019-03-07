@@ -13,11 +13,12 @@ export default class ResumeCommand extends Command {
   }
 
   public async exec (message: Message) {
-    const cannotOverwrite = (this.handler.modules.get('play') as PlayCommand).cannotOverwrite;
+    const playCommand = (this.handler.modules.get('play') as PlayCommand);
     const myQueue = await this.client.getQueue(message.guild.id);
     const resolvedUser = myQueue.user ? await message.guild.members.fetch(myQueue.user) : null;
 
-    if (await cannotOverwrite(this.client, message, resolvedUser)) return;
+    if (await playCommand.cannotOverwrite.bind(playCommand, message, resolvedUser)()) return;
+    if (myQueue.current) return playCommand.resurrect.bind(playCommand, message.guild.id, myQueue);
 
     const player = this.client.music.lavalink.get(message.guild.id);
 
