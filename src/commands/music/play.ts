@@ -224,7 +224,7 @@ export default class PlayCommand extends Command {
     const next = currentList.tracks[0];
     currentList.current = current;
 
-    this.client.setQueue(message.guild.id, currentList);
+    await this.client.setQueue(message.guild.id, currentList);
 
     player
       .play(current.track)
@@ -248,6 +248,9 @@ export default class PlayCommand extends Command {
         const _currentList = await this.client.getQueue(message.guild.id);
 
         if (_currentList.tracks.length) {
+          _currentList.current = null;
+
+          await this.client.setQueue(message.guild.id, _currentList);
           player.removeAllListeners();
 
           return this.play(message);
