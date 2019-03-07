@@ -78,9 +78,10 @@ export default class SaveCommand extends Command {
         name
       }
     });
-    const totalTracks = queue.current ? queue.tracks.unshift(queue.current) : queue.tracks;
 
-    await qUpdated.update({ list: totalTracks });
+    if (queue.current) queue.tracks.unshift(queue.current);
+
+    await qUpdated.update({ list: queue.tracks });
 
     return message.util.reply(
       this.client.dialog(
