@@ -4,7 +4,7 @@ import { Message } from 'discord.js';
 export default class DeleteCommand extends Command {
   constructor () {
     super('delete', {
-      aliases: [ 'delete' ],
+      aliases: [ 'delete', 'del' ],
       description: {
         content: 'Deletes a playlist from your account.',
         usage: '<playlist name>',
