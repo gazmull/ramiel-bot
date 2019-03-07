@@ -31,15 +31,15 @@ export default class extends Listener {
     for (const [ k, node ] of this.client.music.lavalink.nodes)
       node
         .on('ready', async () => {
-          this.client.logger.info(`${k} Connected to Lavalink Server!`);
+          this.client.logger.info(`Lavalink(${k}): Connected!`);
 
           const guilds = await this.client.db.Queue.findAll();
 
           if (!guilds.length) return;
 
-          const resurrect = (this.client.commandHandler.modules.get('play') as PlayCommand).resurrect;
+          const playCommand = (this.client.commandHandler.modules.get('play') as PlayCommand);
 
-          this.client.logger.info(`${k} Reconnecting to previously active players...`);
+          this.client.logger.info(`Lavalink(${k}): Reconnecting to previously active players...`);
 
           for (const g of guilds) {
             const queue = await this.client.setQueue(g.guild, {
@@ -51,13 +51,13 @@ export default class extends Listener {
               host: node.host
             });
 
-            await resurrect(g.guild, queue);
+            await playCommand.resurrect.bind(playCommand, g.guild, queue)();
           }
 
-          this.client.logger.info(`${k} Reconnected to previously active players.`);
+          this.client.logger.info(`Lavalink(${k}): Reconnected to previously active players.`);
         })
-        .on('reconnecting', () => this.client.logger.warn(`${k} Reconnecting to Lavalink Server...`))
-        .on('disconnect', inf => this.client.logger.warn(`${k} Disconnected: ${inf}`));
+        .on('reconnecting', () => this.client.logger.warn(`Lavalink(${k}): Reconnecting...`))
+        .on('disconnect', inf => this.client.logger.warn(`Lavalink(${k}): Disconnected: ${inf}`));
 
     return true;
   }

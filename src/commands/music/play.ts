@@ -32,7 +32,7 @@ export default class PlayCommand extends Command {
         {
           id: 'unshift',
           match: 'flag',
-          flag: [ '-u', '--unshift', '--first' ]
+          flag: [ '--unshift', '--first' ]
         },
         {
           id: 'keyword',
@@ -55,6 +55,15 @@ export default class PlayCommand extends Command {
 
     if (currentList.tracks.length > 200)
       return message.util.send(this.client.dialog('Forbidden!', 'Queue is currently full. Try again later!'));
+    if (!currentList.host) {
+      const nodes = this.client.music.lavalink.nodes;
+      const selected = nodes.find(N => N.stats.players === Math.min.apply(null, nodes.map(n => n.stats.players)));
+      currentList.host = selected ? selected.host : 'localhost';
+    }
+    if (!currentList.textChannel.id) {
+      currentList.textChannel.id = message.channel.id;
+      currentList.textChannel.message = message.id;
+    }
 
     await message.util.send(this.client.dialog('', `${this.client.config.emojis.loading} Searching...`));
 
@@ -62,21 +71,9 @@ export default class PlayCommand extends Command {
       const songs = await this.client.getSongs(keyword) as Song[];
 
       if ((songs as LavalinkResponse).loadType) {
-        this.client.setQueue(
-          message.guild.id,
-          {
-            tracks: currentList.tracks.concat((songs as LavalinkResponse).tracks),
-            current: currentList.current,
-            user: currentList.user,
-            channel: currentList.channel,
-            host: currentList.host,
-            textChannel: {
-              id: message.channel.id,
-              message: message.id
-            }
-          }
-        );
+        currentList.tracks = currentList.tracks.concat((songs as LavalinkResponse).tracks);
 
+        this.client.setQueue(message.guild.id, currentList);
         await message.util.lastResponse.delete();
 
         return this.play(message);
@@ -122,17 +119,10 @@ export default class PlayCommand extends Command {
           )
         );
 
-      this.client.setQueue(message.guild.id, {
-        channel: currentList.channel,
-        current: currentList.current,
-        tracks: selected.list,
-        user: message.author.id,
-        host: currentList.host,
-        textChannel: {
-          id: message.channel.id,
-          message: message.id
-        }
-      });
+      currentList.tracks = selected.list;
+      currentList.user = message.author.id;
+
+      this.client.setQueue(message.guild.id, currentList);
       await message.util.lastResponse.delete();
 
       return this.play(message);
@@ -162,11 +152,11 @@ export default class PlayCommand extends Command {
   }
 
   public async play (message: Message, song?: Song, unshift = false) {
-    const nodes = this.client.music.lavalink.nodes;
+    const currentList = await this.client.getQueue(message.guild.id);
     const player = await this.client.music.lavalink.join({
       guild: message.guild.id,
       channel: message.member.voice.channelID,
-      host: nodes.find(N => N.stats.players === Math.min.apply(null, nodes.map(n => n.stats.players))).host
+      host: currentList.host
     }, { selfdeaf: true });
     const channel = await this.client.channels.fetch(player.channel) as VoiceChannel;
 
@@ -195,7 +185,7 @@ export default class PlayCommand extends Command {
       return message.channel.send(this.client.dialog('No users in the channel... left for good!'));
     }
 
-    const currentList = await this.client.getQueue(message.guild.id);
+    currentList.channel = channel.id;
     const user = currentList.user ? await message.guild.members.fetch(currentList.user) : null;
     const unshiftable = unshift && await this.cannotOverwrite(this.client, message, user);
 
@@ -205,7 +195,6 @@ export default class PlayCommand extends Command {
       else
         currentList.tracks.push(song);
 
-      currentList.channel = channel.id;
       await this.client.setQueue(message.guild.id, currentList);
     }
 
@@ -231,7 +220,7 @@ export default class PlayCommand extends Command {
   }
 
   protected async process (message: Message, player: Player, currentList: GuildQueue) {
-    const current = currentList.tracks.shift();
+    const current = currentList.current || currentList.tracks.shift();
     const next = currentList.tracks[0];
     currentList.current = current;
 
@@ -240,11 +229,15 @@ export default class PlayCommand extends Command {
     player
       .play(current.track)
       .once('disconnect', async err => {
+        currentList.current.info.position = (player.state as any).position;
+        await this.client.setQueue(message.guild.id, currentList);
         await this.client.music.lavalink.leave(message.guild.id);
 
         throw err;
       })
       .once('error', async err => {
+        currentList.current.info.position = (player.state as any).position;
+        await this.client.setQueue(message.guild.id, currentList);
         await this.client.music.lavalink.leave(message.guild.id);
 
         throw err;
