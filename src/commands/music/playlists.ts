@@ -25,7 +25,7 @@ export default class PlaylistsCommand extends Command {
         {
           id: 'user',
           match: 'option',
-          flag: [ '-fr', '--from' ],
+          flag: [ '-fr', '--from=' ],
           default: (message: Message) => message.author
         },
         {
