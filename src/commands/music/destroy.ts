@@ -14,8 +14,8 @@ export default class DestroyCommand extends Command {
 
   public async exec (message: Message) {
     const playCommand = (this.handler.modules.get('play') as PlayCommand);
-    const hasPlaylist = (await this.client.getQueue(message.guild.id)).user;
-    const resolvedUser = hasPlaylist ? await message.guild.members.fetch(hasPlaylist) : null;
+    const hasPlaylist = this.client.music.queues.get(message.guild.id);
+    const resolvedUser = hasPlaylist && hasPlaylist.user ? await message.guild.members.fetch(hasPlaylist.user) : null;
 
     if (await playCommand.cannotOverwrite.bind(playCommand, message, resolvedUser)()) return;
 
