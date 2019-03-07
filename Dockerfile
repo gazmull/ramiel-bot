@@ -1,9 +1,5 @@
 FROM node:11.2.0-alpine AS build
 
-LABEL name "ramiel-bot"
-LABEL version "0.1.0"
-LABEL maintainer "Euni <vescalaw@gmail.com>"
-
 COPY . /ramiel-client
 WORKDIR /ramiel-client
 
@@ -19,6 +15,10 @@ RUN if ls | grep "auth.js.bak"; then rm auth.js && mv auth.js.bak auth.js; fi
 # ---
 
 FROM node:11.2.0-alpine
+
+LABEL name="ramiel-bot" \
+  version="0.1.0" \
+  maintainer="Euni <vescalaw@gmail.com>"
 
 WORKDIR /ramiel-client
 
