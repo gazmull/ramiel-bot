@@ -1,4 +1,4 @@
-import { AkairoClient, Command } from 'discord-akairo';
+import { Command } from 'discord-akairo';
 import { GuildMember, Message, TextChannel, VoiceChannel } from 'discord.js';
 import { Player } from 'discord.js-lavalink';
 import { GuildQueue, LavalinkResponse, Song } from '../../../typings';
@@ -107,7 +107,7 @@ export default class PlayCommand extends Command {
       const selected: Playlist = lists.length === 1 ? lists[0] : await this.client.selection.exec(message, this, lists);
       const user = currentList.user ? await message.guild.members.fetch(currentList.user) : null;
 
-      if (await this.cannotOverwrite(this.client, message, user))
+      if (await this.cannotOverwrite(message, user))
         return message.util.edit(
           this.client.dialog(
             'Not Allowed To Override Current Playlist',
@@ -187,7 +187,7 @@ export default class PlayCommand extends Command {
 
     currentList.channel = channel.id;
     const user = currentList.user ? await message.guild.members.fetch(currentList.user) : null;
-    const unshiftable = unshift && await this.cannotOverwrite(this.client, message, user);
+    const unshiftable = unshift && await this.cannotOverwrite(message, user);
 
     if (song) {
       if (unshiftable)
@@ -271,8 +271,8 @@ export default class PlayCommand extends Command {
     );
   }
 
-  public async cannotOverwrite (client: AkairoClient, message: Message, user: GuildMember) {
-    const role = await client.db.Moderator.findOne({ where: { guild: message.guild.id } });
+  public async cannotOverwrite (message: Message, user: GuildMember) {
+    const role = await this.client.db.Moderator.findOne({ where: { guild: message.guild.id } });
 
     return (
       (user && user.hasPermission('MANAGE_GUILD') && !message.member.hasPermission('MANAGE_GUILD')) ||

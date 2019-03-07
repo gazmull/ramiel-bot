@@ -25,7 +25,7 @@ export default class QueueCommand extends Command {
     const myQueue = await this.client.getQueue(message.guild.id);
     const currentSong = this.client.music.lavalink.get(message.guild.id);
 
-    if (!currentSong || !myQueue.current)
+    if (!myQueue.current)
       return message.util.reply(this.client.dialog('I got nothing on queue, baby\~\~ nothing on queue, baby\~!'));
 
     const isNothing = myQueue.tracks.length
@@ -42,7 +42,8 @@ export default class QueueCommand extends Command {
       .setTitle('Now Playing...')
       .setDescription([
         `[**${myQueue.current.info.title}**](${myQueue.current.info.uri}) by **${myQueue.current.info.author}**`,
-        `${prettifyMs((currentSong.state as any).position)} / ${prettifyMs(myQueue.current.info.length)}`,
+        // tslint:disable-next-line:max-line-length
+        `${currentSong ? prettifyMs((currentSong.state as any).position) : 'Not Playing'} / ${prettifyMs(myQueue.current.info.length)}`,
         `To skip to a song, say \`${this.client.config.prefix}skip <song number>\``,
       ])
       .setColor(0xFE9257)
