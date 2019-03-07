@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo';
-import { GuildMember, Message, TextChannel, VoiceChannel } from 'discord.js';
+import { GuildMember, Message, TextChannel, User, VoiceChannel } from 'discord.js';
 import { Player } from 'discord.js-lavalink';
 import { GuildQueue, LavalinkResponse, Song } from '../../../typings';
 import Playlist from '../../struct/models/Playlist';
@@ -7,7 +7,7 @@ import Playlist from '../../struct/models/Playlist';
 export default class PlayCommand extends Command {
   constructor () {
     super('play', {
-      aliases: [ 'add', 'play', 'search' ],
+      aliases: [ 'play', 'add', 'search' ],
       description: {
         content: [
           'Plays or adds a music to the playlist.',
@@ -25,7 +25,8 @@ export default class PlayCommand extends Command {
       ratelimit: 3,
       args: [
         {
-          id: 'playlist',
+          id: 'user',
+          type: 'user',
           match: 'option',
           flag: [ '-fr', '--from=' ]
         },
@@ -49,7 +50,7 @@ export default class PlayCommand extends Command {
 
   public async exec (
     message: Message,
-    { playlist, keyword, unshift }: { playlist: string, keyword?: string, unshift: boolean }
+    { user, keyword, unshift }: { user: User, keyword?: string, unshift: boolean }
   ) {
     const currentList = await this.client.getQueue(message.guild.id);
 
@@ -67,7 +68,7 @@ export default class PlayCommand extends Command {
 
     await message.util.send(this.client.dialog('', `${this.client.config.emojis.loading} Searching...`));
 
-    if (keyword && !playlist) {
+    if (keyword && !user) {
       const songs = await this.client.getSongs(keyword) as Song[];
 
       if ((songs as LavalinkResponse).loadType) {
@@ -92,27 +93,26 @@ export default class PlayCommand extends Command {
       await message.util.lastResponse.delete();
 
       return this.play(message, song, unshift);
-    } else if (playlist) {
-      const resolvedUser = this.client.util.resolveUser(playlist, this.client.users) || message.author;
+    } else if (user) {
       const lists = await this.client.db.Playlist.findAll({
         where: {
-          user: resolvedUser.id,
+          user: user.id,
           name: { [this.client.db.Op.like]: `%${keyword}%` }
         }
       });
 
       if (!lists.length)
-        return message.util.edit(this.client.dialog(`No Playlist Saved as ${keyword} from ${resolvedUser.tag} Found!`));
+        return message.util.edit(this.client.dialog(`No Playlist Saved as ${keyword} from ${user.tag} Found!`));
 
       const selected: Playlist = lists.length === 1 ? lists[0] : await this.client.selection.exec(message, this, lists);
-      const user = currentList.user ? await message.guild.members.fetch(currentList.user) : null;
+      const targetUser = currentList.user ? await message.guild.members.fetch(currentList.user) : null;
 
-      if (await this.cannotOverwrite(message, user))
+      if (await this.cannotOverwrite(message, targetUser))
         return message.util.edit(
           this.client.dialog(
             'Not Allowed To Override Current Playlist',
             [
-              `${user}, who is a server staff member, has loaded up his/her playlist at the moment.`,
+              `${targetUser}, who is a server staff member, has loaded up his/her playlist at the moment.`,
               // tslint:disable-next-line:max-line-length
               'You may not load up your own, or please try contacting him/her to destroy the current playlist I am holding!',
             ]
@@ -187,7 +187,7 @@ export default class PlayCommand extends Command {
 
     currentList.channel = channel.id;
     const user = currentList.user ? await message.guild.members.fetch(currentList.user) : null;
-    const unshiftable = unshift && await this.cannotOverwrite(message, user);
+    const unshiftable = unshift && !(await this.cannotOverwrite(message, user));
 
     if (song) {
       if (unshiftable)
