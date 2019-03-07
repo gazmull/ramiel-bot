@@ -27,7 +27,9 @@ export default class Winston {
       log instanceof Error
         ? formatError(log)
         : formatMessage(
-            Object.create({ level: log.level, message: inspect(log.message, { showHidden: true, depth: 1 }) })
+            typeof log.message === 'string'
+            ? log
+            : Object.create({ level: log.level, message: inspect(log.message, { showHidden: true, depth: 1 }) })
           );
 
     return format.combine(format.printf(_format));
