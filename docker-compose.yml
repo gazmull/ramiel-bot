@@ -5,10 +5,9 @@ version: "3"
 services:
   ramiel-server:
     container_name: lavalink
-    image: fredboat/lavalink:master
+    image: fredboat/lavalink:b5fe889b
     restart: on-failure:3
-    ports:
-      - 2333:2333
+    network_mode: host
     volumes:
       - ./application.yml:/opt/Lavalink/application.yml
       - ./logs:/opt/Lavalink/logs

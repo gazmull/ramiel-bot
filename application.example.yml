@@ -1,12 +1,12 @@
 server: # REST and WS server
   port: 2333
-  address: "ramiel-server" # Do not touch this unless you know what you're doing
+  address: "127.0.0.1"
 spring:
   main:
     banner-mode: log
 lavalink:
   server:
-    password: "youshallnotpass"
+    password: youshallnotpass
     sources:
       youtube: true
       bandcamp: true

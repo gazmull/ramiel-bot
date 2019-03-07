@@ -26,6 +26,4 @@ COPY --from=build /ramiel-client/node_modules node_modules
 COPY --from=build /ramiel-client/build build
 COPY --from=build /ramiel-client/auth.js /ramiel-client/package.json ./
 
-ENV NODE_ENV production
-
 CMD node ./build/index.js
