@@ -12,23 +12,26 @@ export default class PlaylistsCommand extends Command {
       description: {
         content: [
           'Shows someone\'s saved playlists.',
-          'Shows songs from a playlist when second argument is filled up.',
+          'Shows songs from a playlist an argument is provided.',
+          '\n',
+          'Adding **--from=<user>** will search for a playlist name from the specified user instead',
         ],
-        usage: '[user] [playlist name]',
-        examples: [ '', 'ramiel', 'ramiel Metal-Rock-Covers-by-Rami-Rami-Rami' ]
+        usage: '[playlist name] [--from=<user>]',
+        examples: [ '', '--from=ramiel', 'Metal-Rock-Covers-by-Rami-Rami-Rami --from=ramiel' ]
       },
       ratelimit: 1,
       channel: 'guild',
       args: [
         {
           id: 'user',
-          type: 'user',
+          match: 'option',
+          flag: [ '-fr', '--from' ],
           default: (message: Message) => message.author
         },
         {
           id: 'playlist',
           type: 'lowercase',
-          match: 'rest'
+          match: 'text'
         },
       ]
     });
@@ -43,7 +46,7 @@ export default class PlaylistsCommand extends Command {
     const lists = await this.client.db.Playlist.findAll({ where, attributes: [ 'name', 'list' ] });
 
     if (!lists.length)
-      return message.util.reply(this.client.dialog(`Hmm... can\'t find one from ${user}.`));
+      return message.util.reply(this.client.dialog(`Hmm... can\'t find one from ${user.tag}.`));
 
     const embed = new FieldsEmbed()
       .setColor(0xFE9257)
