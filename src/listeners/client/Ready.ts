@@ -23,6 +23,13 @@ export default class extends Listener {
         : `${guildSize} Guilds`}`);
     else this.client.logger.info('Standby Mode');
 
+    this.readyLavalink();
+    // this.cleanQueues();
+
+    return true;
+  }
+
+  protected readyLavalink () {
     this.client.music.lavalink = new PlayerManager(this.client, this.client.config.nodes, {
       user: this.client.user.id,
       shards: this.client.shard ? this.client.shard.count : 0
@@ -61,4 +68,10 @@ export default class extends Listener {
 
     return true;
   }
+
+  // protected cleanQueues () {
+  //   this.client.setInterval(async () => {
+  //     await this.client.db.Queue.destroy({ where: { current: null, tracks: null } });
+  //   }, 3e5);
+  // }
 }
