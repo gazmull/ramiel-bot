@@ -25,8 +25,11 @@ export default class QueueCommand extends Command {
     const myQueue = await this.client.getQueue(message.guild.id);
     const currentSong = this.client.music.lavalink.get(message.guild.id);
 
-    if (!myQueue.current)
+    if (!myQueue.current && !myQueue.tracks.length) {
+      await this.client.deleteQueue(message.guild.id, false);
+
       return message.util.reply(this.client.dialog('I got nothing on queue, baby\~\~ nothing on queue, baby\~!'));
+    }
 
     const isNothing = myQueue.tracks.length
       ? myQueue.tracks
