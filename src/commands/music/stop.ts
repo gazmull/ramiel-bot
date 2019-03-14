@@ -32,6 +32,11 @@ export default class StopCommand extends Command {
     const resolvedUser = myQueue.user ? await message.guild.members.fetch(myQueue.user) : null;
 
     if (await playCommand.cannotOverwrite.bind(playCommand, message, resolvedUser)()) return;
+    if (myQueue.current) {
+      myQueue.current = null;
+
+      return playCommand.resurrect.bind(playCommand, message.guild.id, myQueue)();
+    }
 
     const player = this.client.music.lavalink.get(message.guild.id);
 
