@@ -1,6 +1,5 @@
 import { Command, Listener } from 'discord-akairo';
 import { Message } from 'discord.js';
-import RamielClient from '../../struct/RamielClient';
 
 export default class extends Listener {
   constructor () {
@@ -11,6 +10,6 @@ export default class extends Listener {
   }
 
   public exec (err: Error, message: Message, command: Command) {
-   if (command && message) return new (this.client as RamielClient).RamielError(message, command, err);
+   if (command && message) return new this.client.RamielError(message, command, err);
   }
 }

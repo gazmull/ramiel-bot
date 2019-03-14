@@ -1,6 +1,5 @@
 import { Command } from 'discord-akairo';
 import { Message } from 'discord.js';
-import RamielClient from './RamielClient';
 
 export default class RamielError {
 
@@ -37,7 +36,7 @@ export default class RamielError {
       `${title}:`,
       '\`\`\`x1',
       `${this.err}\`\`\``,
-      `\nIs it a consistent error? Submit an issue here: ${(this.message.client as RamielClient).config.supportLink}`,
+      `\nIs it a consistent error? Submit an issue here: ${this.message.client.config.supportLink}`,
     ];
 
     return this.message.util.lastResponse
