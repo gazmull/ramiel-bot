@@ -8,7 +8,7 @@ export default class Winston {
     transports: [
       new transports.Console(),
       new RotateFile({
-        filename: 'ramiel_%DATE%.log',
+        filename: 'ramiel.%DATE%.log',
         dirname: process.cwd() + '/logs',
         maxFiles: '15d',
         maxSize: '256m'
