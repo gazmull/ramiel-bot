@@ -22,20 +22,22 @@ export default class PlaylistsCommand extends Command {
       ratelimit: 1,
       channel: 'guild',
       optionFlags: [ '-f', '--from=' ],
-      args: [
-        {
-          id: 'user',
+      * args () {
+        const user = yield {
           type: 'user',
           match: 'option',
           flag: [ '-f', '--from=' ],
           default: (message: Message) => message.author
-        },
-        {
+        };
+
+        const playlist = yield {
           id: 'playlist',
           type: 'lowercase',
-          match: 'text'
-        },
-      ]
+          match: 'rest'
+        };
+
+        return { user, playlist };
+      }
     });
   }
 

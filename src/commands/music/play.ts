@@ -25,28 +25,29 @@ export default class PlayCommand extends Command {
       ratelimit: 3,
       flags: [ '--unshift', '--first' ],
       optionFlags: [ '-f', '--from=' ],
-      args: [
-        {
-          id: 'user',
+      * args () {
+        const user = yield {
           type: 'user',
           match: 'option',
           flag: [ '-f', '--from=' ]
-        },
-        {
-          id: 'unshift',
+        };
+
+        const unshift = yield {
           match: 'flag',
           flag: [ '--unshift', '--first' ]
-        },
-        {
-          id: 'keyword',
+        };
+
+        const keyword = yield {
           type: 'music',
-          match: 'text',
+          match: 'rest',
           prompt: {
             start: 'What music would you like to play?',
             retry: 'Name is too short. Try again!'
           }
-        },
-      ]
+        };
+
+        return { user, unshift, keyword };
+      }
     });
   }
 

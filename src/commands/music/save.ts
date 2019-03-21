@@ -20,22 +20,23 @@ export default class SaveCommand extends Command {
       channel: 'guild',
       ratelimit: 1,
       optionFlags: [ '-l', '--link=' ],
-      args: [
-        {
-          id: 'link',
+      * args () {
+        const link = yield {
           match: 'option',
           flag: [ '-l', '--link=' ]
-        },
-        {
-          id: 'name',
+        };
+
+        const name = yield {
           type: 'music',
-          match: 'text',
+          match: 'rest',
           prompt: {
             start: 'What would you like to name the new playlist as?',
             retry: 'Name is too short. Try Again!'
           }
-        },
-      ]
+        };
+
+        return { link, name };
+      }
     });
   }
 

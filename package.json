@@ -17,7 +17,8 @@
     "lint": "tslint -c .tslint.js -p .",
     "lint-fix": "yarn run lint --fix",
     "dev:watch": "tsc -p . --watch",
-    "dev:start": "nodemon . --config .nodemon.json"
+    "dev:start": "nodemon . --config .nodemon.json",
+    "dev:start-lavalink": "java -jar server/Lavalink.jar"
   },
   "dependencies": {
     "@naval-base/ms": "^2.2.1",
