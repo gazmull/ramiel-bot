@@ -15,7 +15,7 @@ export default class VolumeCommand extends Command {
       args: [
         {
           id: 'volume',
-          type: phrase => {
+          type: (_, phrase) => {
             if (!phrase || isNaN(Number(phrase))) return null;
 
             const num = parseInt(phrase);

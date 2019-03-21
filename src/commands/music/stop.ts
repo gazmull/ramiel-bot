@@ -32,7 +32,7 @@ export default class StopCommand extends Command {
     const resolvedUser = myQueue.user ? await message.guild.members.fetch(myQueue.user) : null;
 
     if (await playCommand.cannotOverwrite.bind(playCommand, message, resolvedUser)()) return;
-    if (myQueue.current) {
+    if (myQueue.current || myQueue.tracks.length) {
       myQueue.current = null;
 
       return playCommand.resurrect.bind(playCommand, message.guild.id, myQueue)();

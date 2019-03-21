@@ -40,7 +40,7 @@ export default class SaveCommand extends Command {
 
   public async exec (message: Message, { link, name }: { link: string, name: string }) {
     if (link) {
-      link = this.handler.resolver.type('url')(link, message, { });
+      link = this.handler.resolver.type('url')(message, link);
       const resolved = await this.client.getSongs(link);
 
       if (!(resolved as LavalinkResponse).loadType)

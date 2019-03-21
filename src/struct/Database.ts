@@ -1,4 +1,5 @@
-import { ISequelizeConfig, Sequelize } from 'sequelize-typescript';
+import { Op } from 'sequelize';
+import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import { db } from './../../auth';
 import Blacklist from './models/Blacklist';
 import Moderator from './models/Moderator';
@@ -25,12 +26,12 @@ export const sequelize = new Sequelize({
     max: 10,
     min: 0
   }
-} as ISequelizeConfig);
+} as SequelizeOptions);
 
 export const create = () => {
   return {
     sequelize,
-    Op: Sequelize.Op,
+    Op,
     Playlist,
     Blacklist,
     Moderator,

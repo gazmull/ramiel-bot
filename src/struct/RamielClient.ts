@@ -32,7 +32,7 @@ export default class RamielClient extends AkairoClient {
 
     this.config = config;
 
-    this.commandHandler.resolver.addType('music', (phrase: string) => {
+    this.commandHandler.resolver.addType('music', (_, phrase: string) => {
       if (!phrase) return null;
       if (phrase.length <= 2) return null;
 
@@ -40,7 +40,7 @@ export default class RamielClient extends AkairoClient {
     });
   }
 
-  public commandHandler = new CommandHandler(this, {
+  public commandHandler: CommandHandler = new CommandHandler(this, {
     allowMention: true,
     automateCategories: true,
     commandUtil: true,
@@ -50,8 +50,8 @@ export default class RamielClient extends AkairoClient {
     defaultPrompt: {
       cancel: (msg: Message) => `${msg.author}, command cancelled.`,
       ended: (msg: Message) => `${msg.author}, command declined.`,
-      modifyRetry: (text, msg) => text && `${msg.author}, ${text}\n\nType \`cancel\` to cancel this command.`,
-      modifyStart: (text, msg) => text && `${msg.author}, ${text}\n\nType \`cancel\` to cancel this command.`,
+      modifyRetry: (msg, text) => text && `${msg.author}, ${text}\n\nType \`cancel\` to cancel this command.`,
+      modifyStart: (msg, text) => text && `${msg.author}, ${text}\n\nType \`cancel\` to cancel this command.`,
       retries: 3,
       time: 30000,
       timeout: (msg: Message) => `${msg.author}, command expired.`
@@ -60,12 +60,12 @@ export default class RamielClient extends AkairoClient {
     prefix: [ prefix, 'ramiel, ' ]
   });
 
-  public inhibitorHandler = new InhibitorHandler(this, {
+  public inhibitorHandler: InhibitorHandler = new InhibitorHandler(this, {
     automateCategories: true,
     directory: __dirname + '/../inhibitors'
   });
 
-  public listenerHandler = new ListenerHandler(this, {
+  public listenerHandler: ListenerHandler = new ListenerHandler(this, {
     automateCategories: true,
     directory: __dirname + '/../listeners'
   });

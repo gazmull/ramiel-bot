@@ -26,7 +26,7 @@ export default class SeekCommand extends Command {
       args: [
         {
           id: 'seek',
-          type: phrase => {
+          type: (_, phrase) => {
             if (!phrase) return null;
 
             const parsed = phrase.split(/ +/g);

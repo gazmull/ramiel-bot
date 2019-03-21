@@ -24,7 +24,7 @@ interface RamielClient {
   RamielError: typeof RamielError;
   db: {
     sequelize: Sequelize,
-    Op: Sequelize['Op'],
+    Op: any, // Why `Import { Op } from 'sequelize'` doesn't work?!?!?!
     Playlist: typeof Playlist,
     Blacklist: typeof Blacklist,
     Moderator: typeof Moderator,
