@@ -11,6 +11,7 @@ export default class extends Command {
         usage: '[command name]',
         examples: [ '', 'ping', 'play' ]
       },
+      flags: [ '--pub', '--public' ],
       args: [
         {
           id: 'command',

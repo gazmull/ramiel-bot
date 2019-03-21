@@ -19,6 +19,7 @@ export default class SaveCommand extends Command {
       },
       channel: 'guild',
       ratelimit: 1,
+      optionFlags: [ '-l', '--link=' ],
       args: [
         {
           id: 'link',

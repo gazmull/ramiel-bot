@@ -23,12 +23,14 @@ export default class PlayCommand extends Command {
       lock: 'guild',
       channel: 'guild',
       ratelimit: 3,
+      flags: [ '--unshift', '--first' ],
+      optionFlags: [ '-f', '--from=' ],
       args: [
         {
           id: 'user',
           type: 'user',
           match: 'option',
-          flag: [ '-fr', '--from=' ]
+          flag: [ '-f', '--from=' ]
         },
         {
           id: 'unshift',

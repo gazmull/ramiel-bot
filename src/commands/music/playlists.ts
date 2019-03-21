@@ -21,12 +21,13 @@ export default class PlaylistsCommand extends Command {
       },
       ratelimit: 1,
       channel: 'guild',
+      optionFlags: [ '-f', '--from=' ],
       args: [
         {
           id: 'user',
           type: 'user',
           match: 'option',
-          flag: [ '-fr', '--from=' ],
+          flag: [ '-f', '--from=' ],
           default: (message: Message) => message.author
         },
         {
