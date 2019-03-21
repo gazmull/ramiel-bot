@@ -10,7 +10,7 @@
 - Built with [**Discord.JS-Akairo Framework** (**Master**)](https://github.com/1computer1/discord-akairo) and [**Discord.JS-Lavalink Client**](https://github.com/MrJacz/discord.js-lavalink)
     - [**Discord.JS-Akairo Documentation**](https://1computer1.github.io/discord-akairo/master)
     - [**Discord.JS-Lavalink Documentation**](https://mrjacz.github.io/discord.js-lavalink)
-- [**Discord Server**](http://ramieldev.thegzm.space)
+- [**Discord Server**](http://erosdev.thegzm.space)
 - [**Bot Guide**](https://docs.thegzm.space/ramiel-bot) (N/A)
 
 # Features
