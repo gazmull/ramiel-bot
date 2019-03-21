@@ -4,6 +4,15 @@ import { Message } from 'discord.js';
 import { Song } from '../../../typings';
 import prettifyMs from '../../util/prettifyMs';
 
+const NOTHING = {
+  info: {
+    title: 'Nothing to play here',
+    uri: 'http://erosdev.thegzm.space',
+    author: 'Ramiel',
+    length: 817000
+  }
+};
+
 export default class QueueCommand extends Command {
   constructor () {
     super('queue', {
@@ -31,26 +40,18 @@ export default class QueueCommand extends Command {
       return message.util.reply(this.client.dialog('I got nothing on queue, baby\~\~ nothing on queue, baby\~!'));
     }
 
-    const isNothing = myQueue.tracks.length
-      ? myQueue.tracks
-      : [ {
-        info: {
-          title: 'Nothing to play here',
-          uri: 'http://erosdev.thegzm.space',
-          author: 'Ramiel',
-          length: 817000
-        }
-      } ];
+    const isCurrentNothing = myQueue.current ? myQueue.current : NOTHING;
+    const areTracksNothing = myQueue.tracks.length ? myQueue.tracks : [ NOTHING ];
     const embed = new FieldsEmbed()
       .setTitle('Now Playing...')
       .setDescription([
-        `[**${myQueue.current.info.title}**](${myQueue.current.info.uri}) by **${myQueue.current.info.author}**`,
+        `[**${isCurrentNothing.info.title}**](${isCurrentNothing.info.uri}) by **${isCurrentNothing.info.author}**`,
         // tslint:disable-next-line:max-line-length
-        `${currentSong ? prettifyMs((currentSong.state as any).position) : 'Not Playing'} / ${prettifyMs(myQueue.current.info.length)}`,
+        `${currentSong ? prettifyMs((currentSong.state as any).position) : 'Not Playing'} / ${prettifyMs(isCurrentNothing.info.length)}`,
         `To skip to a song, say \`${this.client.config.prefix}skip <song number>\``,
       ])
       .setColor(0xFE9257)
-      .setArray(isNothing)
+      .setArray(areTracksNothing)
       .setAuthorizedUsers([ message.author.id ])
       .setChannel(message.channel)
       .setElementsPerPage(5)
@@ -60,7 +61,7 @@ export default class QueueCommand extends Command {
         '# - Song',
         (t: Song) =>
           // tslint:disable-next-line:max-line-length
-          `**${isNothing.indexOf(t) + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
+          `**${areTracksNothing.indexOf(t) + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
       );
 
     return embed.build();
