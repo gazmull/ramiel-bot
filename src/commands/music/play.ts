@@ -39,7 +39,7 @@ export default class PlayCommand extends Command {
 
         const keyword = yield {
           type: 'music',
-          match: 'rest',
+          match: 'text',
           prompt: {
             start: 'What music would you like to play?',
             retry: 'Name is too short. Try again!'

@@ -28,7 +28,7 @@ export default class SaveCommand extends Command {
 
         const name = yield {
           type: 'music',
-          match: 'rest',
+          match: 'text',
           prompt: {
             start: 'What would you like to name the new playlist as?',
             retry: 'Name is too short. Try Again!'

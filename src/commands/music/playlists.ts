@@ -33,7 +33,7 @@ export default class PlaylistsCommand extends Command {
         const playlist = yield {
           id: 'playlist',
           type: 'lowercase',
-          match: 'rest'
+          match: 'text'
         };
 
         return { user, playlist };
