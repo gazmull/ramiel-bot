@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo';
-import { FieldsEmbed } from 'discord-paginationembed';
+import FieldsEmbed from 'discord-paginationembed/bin/struct/FieldsEmbed';
 import { Message, User } from 'discord.js';
 import { Song } from '../../../typings';
 import Playlist from '../../struct/models/Playlist';
@@ -52,45 +52,52 @@ export default class PlaylistsCommand extends Command {
     if (!lists.length)
       return message.util.reply(this.client.dialog(`Hmm... can\'t find one from ${user.tag}.`));
 
-    const embed = new FieldsEmbed()
-      .setColor(0xFE9257)
+    const Pagination = new FieldsEmbed<Song | Playlist>()
       .setAuthorizedUsers([ message.author.id ])
       .setChannel(message.channel)
       .setElementsPerPage(5);
 
-    if (lists.length === 1) return this.doSongs(embed, user, lists.shift());
+    Pagination.embed.setColor(0xFE9257);
+
+    if (lists.length === 1) return this.doSongs(Pagination as FieldsEmbed<Song>, user, lists.shift());
     if (playlist) {
       const foundExact = lists.find(s => s.name.toLowerCase() === playlist);
 
-      if (foundExact) return this.doSongs(embed, user, foundExact);
+      if (foundExact) return this.doSongs(Pagination as FieldsEmbed<Song>, user, foundExact);
     }
 
-    return this.doLists(embed, user, lists);
+    return this.doLists(Pagination as FieldsEmbed<Playlist>, user, lists);
   }
 
-  protected doSongs (embed: FieldsEmbed, user: User, playlist: Playlist) {
-    return embed
+  protected doSongs (Pagination: FieldsEmbed<Song>, user: User, playlist: Playlist) {
+    Pagination
       .setArray(playlist.list)
-      .setTitle(`${user.tag}'s ${playlist.name}`)
-      .setDescription(
-        `Add this playlist to the queue with \`${this.client.config.prefix}play ${playlist.name} --from=${user.id}\``
-      )
       .formatField(
         '# - Song',
         (t: Song) =>
           // tslint:disable-next-line:max-line-length
           `**${playlist.list.findIndex(e => e.info.identifier === t.info.identifier) + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
       )
-      .build();
+      .embed
+        .setTitle(`${user.tag}'s ${playlist.name}`)
+        .setDescription(
+          `Add this playlist to the queue with \`${this.client.config.prefix}play ${playlist.name} --from=${user.id}\``
+        );
+
+    return Pagination.build();
   }
 
-  protected doLists (embed: FieldsEmbed, user: User, playlists: Playlist[]) {
-    return embed
-      .setTitle(`${user.tag}'s Playlists`)
-      .setDescription(`To see a playlist's songs, say \`${this.client.config.prefix}list ${user.id} [playlist name]\``)
+  protected doLists (Pagination: FieldsEmbed<Playlist>, user: User, playlists: Playlist[]) {
+    Pagination
       .showPageIndicator(true)
       .setArray(playlists)
       .formatField('Songs — Playlist', (l: {name: string, list: Song[]}) => `**${l.list.length}** — ${l.name}`)
-      .build();
+      .embed
+        .setTitle(`${user.tag}'s Playlists`)
+        .setDescription(
+          `To see a playlist's songs, say \`${this.client.config.prefix}list ${user.id} [playlist name]\``
+        );
+
+    return Pagination.build();
   }
 }

@@ -4,12 +4,17 @@ import { Message } from 'discord.js';
 import { Song } from '../../../typings';
 import prettifyMs from '../../util/prettifyMs';
 
-const NOTHING = {
+const NOTHING: Song = {
+  track: null,
   info: {
     title: 'Nothing to play here',
     uri: 'http://erosdev.thegzm.space',
     author: 'Ramiel',
-    length: 817000
+    length: 817000,
+    identifier: null,
+    isSeekable: false,
+    isStream: false,
+    position: 0
   }
 };
 
@@ -42,15 +47,7 @@ export default class QueueCommand extends Command {
 
     const isCurrentNothing = myQueue.current ? myQueue.current : NOTHING;
     const areTracksNothing = myQueue.tracks.length ? myQueue.tracks : [ NOTHING ];
-    const embed = new FieldsEmbed()
-      .setTitle('Now Playing...')
-      .setDescription([
-        `[**${isCurrentNothing.info.title}**](${isCurrentNothing.info.uri}) by **${isCurrentNothing.info.author}**`,
-        // tslint:disable-next-line:max-line-length
-        `${currentSong ? prettifyMs((currentSong.state as any).position) : 'Not Playing'} / ${prettifyMs(isCurrentNothing.info.length)}`,
-        `To skip to a song, say \`${this.client.config.prefix}skip <song number>\``,
-      ])
-      .setColor(0xFE9257)
+    const Pagination = new FieldsEmbed<Song>()
       .setArray(areTracksNothing)
       .setAuthorizedUsers([ message.author.id ])
       .setChannel(message.channel)
@@ -59,11 +56,21 @@ export default class QueueCommand extends Command {
       .showPageIndicator(true)
       .formatField(
         '# - Song',
-        (t: Song) =>
+        t =>
           // tslint:disable-next-line:max-line-length
           `**${areTracksNothing.indexOf(t) + 1}** - [**${t.info.title}**](${t.info.uri}) by ${t.info.author} (${prettifyMs(t.info.length)})`
       );
 
-    return embed.build();
+    Pagination.embed
+      .setTitle('Now Playing...')
+      .setDescription([
+        `[**${isCurrentNothing.info.title}**](${isCurrentNothing.info.uri}) by **${isCurrentNothing.info.author}**`,
+        // tslint:disable-next-line:max-line-length
+        `${currentSong ? prettifyMs((currentSong.state as any).position) : 'Not Playing'} / ${prettifyMs(isCurrentNothing.info.length)}`,
+        `To skip to a song, say \`${this.client.config.prefix}skip <song number>\``,
+      ])
+      .setColor(0xFE9257);
+
+    return Pagination.build();
   }
 }
