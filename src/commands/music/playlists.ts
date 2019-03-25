@@ -1,4 +1,5 @@
 import { Command } from 'discord-akairo';
+import { FieldsEmbed as FieldsEmbedMode } from 'discord-paginationembed';
 import FieldsEmbed from 'discord-paginationembed/typings/FieldsEmbed';
 import { Message, User } from 'discord.js';
 import { Song } from '../../../typings';
@@ -52,7 +53,7 @@ export default class PlaylistsCommand extends Command {
     if (!lists.length)
       return message.util.reply(this.client.dialog(`Hmm... can\'t find one from ${user.tag}.`));
 
-    const Pagination = new FieldsEmbed<Song | Playlist>()
+    const Pagination = new FieldsEmbedMode<Song | Playlist>()
       .setAuthorizedUsers([ message.author.id ])
       .setChannel(message.channel)
       .setElementsPerPage(5);
