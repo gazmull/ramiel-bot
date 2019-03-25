@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo';
-import FieldsEmbed from 'discord-paginationembed/bin/struct/FieldsEmbed';
+import FieldsEmbed from 'discord-paginationembed/typings/FieldsEmbed';
 import { Message, User } from 'discord.js';
 import { Song } from '../../../typings';
 import Playlist from '../../struct/models/Playlist';
