@@ -1,6 +1,6 @@
 import { Command } from 'discord-akairo';
-import { FieldsEmbed as FieldsEmbedMode } from 'discord-paginationembed';
-import FieldsEmbed from 'discord-paginationembed/typings/FieldsEmbed';
+import { FieldsEmbed } from 'discord-paginationembed';
+import FE from 'discord-paginationembed/typings/FieldsEmbed';
 import { Message, User } from 'discord.js';
 import { Song } from '../../../typings';
 import Playlist from '../../struct/models/Playlist';
@@ -53,24 +53,24 @@ export default class PlaylistsCommand extends Command {
     if (!lists.length)
       return message.util.reply(this.client.dialog(`Hmm... can\'t find one from ${user.tag}.`));
 
-    const Pagination = new FieldsEmbedMode<Song | Playlist>()
+    const Pagination = new FieldsEmbed<Song | Playlist>()
       .setAuthorizedUsers([ message.author.id ])
       .setChannel(message.channel)
       .setElementsPerPage(5);
 
     Pagination.embed.setColor(0xFE9257);
 
-    if (lists.length === 1) return this.doSongs(Pagination as FieldsEmbed<Song>, user, lists.shift());
+    if (lists.length === 1) return this.doSongs(Pagination as FE<Song>, user, lists.shift());
     if (playlist) {
       const foundExact = lists.find(s => s.name.toLowerCase() === playlist);
 
-      if (foundExact) return this.doSongs(Pagination as FieldsEmbed<Song>, user, foundExact);
+      if (foundExact) return this.doSongs(Pagination as FE<Song>, user, foundExact);
     }
 
-    return this.doLists(Pagination as FieldsEmbed<Playlist>, user, lists);
+    return this.doLists(Pagination as FE<Playlist>, user, lists);
   }
 
-  protected doSongs (Pagination: FieldsEmbed<Song>, user: User, playlist: Playlist) {
+  protected doSongs (Pagination: FE<Song>, user: User, playlist: Playlist) {
     Pagination
       .setArray(playlist.list)
       .formatField(
@@ -88,7 +88,7 @@ export default class PlaylistsCommand extends Command {
     return Pagination.build();
   }
 
-  protected doLists (Pagination: FieldsEmbed<Playlist>, user: User, playlists: Playlist[]) {
+  protected doLists (Pagination: FE<Playlist>, user: User, playlists: Playlist[]) {
     Pagination
       .showPageIndicator(true)
       .setArray(playlists)
