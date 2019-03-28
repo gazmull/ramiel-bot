@@ -90,7 +90,7 @@ export default class PlaylistsCommand extends Command {
   protected doLists (Pagination: FieldsEmbed<Playlist>, user: User, playlists: Playlist[]) {
     Pagination
       .setArray(playlists)
-      .formatField('Songs — Playlist', (l: {name: string, list: Song[]}) => `**${l.list.length}** — ${l.name}`)
+      .formatField('Songs — Playlist', l => `**${l.list.length}** — ${l.name}`)
       .embed
         .setTitle(`${user.tag}'s Playlists`)
         .setDescription(
