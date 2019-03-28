@@ -1,4 +1,5 @@
 import { Command, version as akairoVersion } from 'discord-akairo';
+import { version as paginationVersion } from 'discord-paginationembed';
 import { Message, version as discordVersion } from 'discord.js';
 import { version as lavalinkVersion } from 'discord.js-lavalink';
 import * as os from 'os';
@@ -34,6 +35,7 @@ export default class extends Command {
           `**Discord.JS**: v${discordVersion}`,
           `**Akairo**: v${akairoVersion}`,
           `**Lavalink Client**: v${lavalinkVersion}`,
+          `**PaginationEmbed**: v${paginationVersion}`,
           `**Ramiel**: v${ramielVersion} ${privateBot ? '(Private Bot)' : ''}`,
         ], true)
         .addField('Discord', [

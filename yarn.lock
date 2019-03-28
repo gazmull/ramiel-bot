@@ -249,15 +249,15 @@ diff@^3.2.0:
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
 
-discord-akairo@8.0.0-beta.3:
-  version "8.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/discord-akairo/-/discord-akairo-8.0.0-beta.3.tgz#29ec4e034680dc53b23ff1a3ec09b971c59e89f3"
-  integrity sha512-jmcdiGSYtHyIoK/aKJ2UVC7jqFAQgpBZg7QEz4/dO9gZ6357tcOk9RtuKDTm99WXEmigTC8FKeAjsFLjUYrOVg==
+discord-akairo@^8.0.0-beta.4:
+  version "8.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/discord-akairo/-/discord-akairo-8.0.0-beta.4.tgz#5388b5f302f1e04d911915b1ba8b425aab746eda"
+  integrity sha512-9j/ozk0m3vavNCXiiWi09ZLiOuwA4QZyw/n3htnNiTUw47OaTSRGPQE1l0MVA2dJKLDztXuUk1WwrUOfcq0rCw==
 
-discord-paginationembed@^1.0.0-beta.1:
-  version "1.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/discord-paginationembed/-/discord-paginationembed-1.0.0-beta.1.tgz#aca88a503a1b9f022a0f3785cfab307db551c293"
-  integrity sha512-XjfrWi0Ha0yHN9V/Y/tCxGiwjGrr7FPxm3+SW3/hNQ+KzmurZQXwMlQbcP83KXhFtxLLyRr2/og0MLy5LBAH0A==
+discord-paginationembed@^1.0.0-beta.2:
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/discord-paginationembed/-/discord-paginationembed-1.0.0-beta.2.tgz#21e488ec4df19560e2faea79cf2c86d024728c94"
+  integrity sha512-0aSw7h207grej/BZGxkVBZNlx++Hx6Lpk6hMtv1GGr/qURIC5zyhkDnSc0QOaa6iTdnofGu830gaBOYQQ7ke2g==
 
 "discord.js-lavalink@github:mrjacz/discord.js-lavalink":
   version "2.2.2"

@@ -23,8 +23,8 @@
   "dependencies": {
     "@naval-base/ms": "^2.2.1",
     "chalk": "^2.4.2",
-    "discord-akairo": "8.0.0-beta.3",
-    "discord-paginationembed": "^1.0.0-beta.1",
+    "discord-akairo": "^8.0.0-beta.4",
+    "discord-paginationembed": "^1.0.0-beta.2",
     "discord.js": "github:discordjs/discord.js",
     "discord.js-lavalink": "github:mrjacz/discord.js-lavalink",
     "mariadb": "^2.0.3",

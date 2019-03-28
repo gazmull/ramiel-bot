@@ -53,7 +53,7 @@ export default class QueueCommand extends Command {
       .setChannel(message.channel)
       .setElementsPerPage(5)
       .setPage(page)
-      .showPageIndicator(true)
+      .setPageIndicator(true)
       .formatField(
         '# - Song',
         t =>
