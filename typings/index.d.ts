@@ -2,6 +2,7 @@ import { CommandHandler, InhibitorHandler, ListenerHandler } from 'discord-akair
 import { Collection, MessageEmbed, StringResolvable } from 'discord.js';
 import { PlayerManager } from 'discord.js-lavalink';
 import { Sequelize } from 'sequelize-typescript';
+import { Op } from 'sequelize';
 import { Logger } from 'winston';
 import Blacklist from '../src/struct/models/Blacklist';
 import Moderator from '../src/struct/models/Moderator';
@@ -24,7 +25,7 @@ interface RamielClient {
   RamielError: typeof RamielError;
   db: {
     sequelize: Sequelize,
-    Op: any, // Why `Import { Op } from 'sequelize'` doesn't work?!?!?!
+    Op: typeof Op,
     Playlist: typeof Playlist,
     Blacklist: typeof Blacklist,
     Moderator: typeof Moderator,
@@ -35,10 +36,6 @@ interface RamielClient {
   getQueue(guildID: string): Promise<GuildQueue>;
   setQueue(guildID: string, values: GuildQueue): Promise<GuildQueue>;
   deleteQueue(guildID: string, paranoid?: boolean): Promise<boolean>;
-}
-
-declare module 'discord-akairo' {
-  export interface AkairoClient extends RamielClient { }
 }
 
 declare module 'discord.js' {
