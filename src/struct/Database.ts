@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize-typescript';
 import { db } from './../../auth';
 import Blacklist from './models/Blacklist';
 import Moderator from './models/Moderator';
@@ -20,13 +20,12 @@ export const sequelize = new Sequelize({
   },
   logging: false,
   modelPaths: [ __dirname + '/models' ],
-  operatorAliases: false,
   pool: {
     acquire: 30e3,
     max: 10,
     min: 0
   }
-} as SequelizeOptions);
+});
 
 export const create = () => {
   return {

@@ -47,14 +47,16 @@ export default class RamielClient extends AkairoClient {
     commandUtilLifetime: 180e3,
     defaultCooldown: 5e3,
     handleEdits: true,
-    defaultPrompt: {
-      cancel: (msg: Message) => `${msg.author}, command cancelled.`,
-      ended: (msg: Message) => `${msg.author}, command declined.`,
-      modifyRetry: (msg, text) => text && `${msg.author}, ${text}\n\nType \`cancel\` to cancel this command.`,
-      modifyStart: (msg, text) => text && `${msg.author}, ${text}\n\nType \`cancel\` to cancel this command.`,
-      retries: 3,
-      time: 30000,
-      timeout: (msg: Message) => `${msg.author}, command expired.`
+    argumentDefaults: {
+      prompt: {
+        cancel: (msg: Message) => `${msg.author}, command cancelled.`,
+        ended: (msg: Message) => `${msg.author}, command declined.`,
+        modifyRetry: (msg, text) => text && `${msg.author}, ${text}\n\nType \`cancel\` to cancel this command.`,
+        modifyStart: (msg, text) => text && `${msg.author}, ${text}\n\nType \`cancel\` to cancel this command.`,
+        retries: 3,
+        time: 30000,
+        timeout: (msg: Message) => `${msg.author}, command expired.`
+      }
     },
     directory: __dirname + '/../commands',
     prefix: [ prefix, 'ramiel, ' ]

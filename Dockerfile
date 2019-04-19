@@ -1,4 +1,4 @@
-FROM node:11.2.0-alpine AS build
+FROM node:11.10.0-alpine AS build
 
 COPY . /ramiel-client
 WORKDIR /ramiel-client
@@ -14,7 +14,7 @@ RUN if ls | grep "auth.js.bak"; then rm auth.js && mv auth.js.bak auth.js; fi
 
 # ---
 
-FROM node:11.2.0-alpine
+FROM node:11.10.0-alpine
 
 LABEL name="ramiel-bot" \
   version="0.1.0" \
