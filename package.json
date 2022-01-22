@@ -28,7 +28,7 @@
     "discord.js": "github:discordjs/discord.js",
     "discord.js-lavalink": "github:mrjacz/discord.js-lavalink",
     "mariadb": "^2.0.3",
-    "node-fetch": "^2.4.1",
+    "node-fetch": "^3.1.1",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^5.7.6",
     "sequelize-typescript": "^1.0.0-beta.0",
